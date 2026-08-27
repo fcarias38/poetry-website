@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Think Room | Welcome</title>
+
+    <!-- SEO Meta -->
+    <meta
+      name="description"
+      content="Think Room is my body of work — poetry, thoughts, and reflections by Freddy Carias."
+    />
+    <meta name="author" content="Freddy Carias" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://freddycarias.com/" />
+
+    <!-- Open Graph for Social Sharing -->
+    <meta property="og:title" content="Think Room | Welcome" />
+    <meta
+      property="og:description"
+      content="Think Room is my body of work — poetry, thoughts, and reflections by Freddy Carias."
+    />
+    <meta
+      property="og:image"
+      content="https://freddycarias.com/images/jessica-christian-wuqYCTAYPH4-unsplash.jpg"
+    />
+    <meta property="og:url" content="https://freddycarias.com" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Think Room | Welcome" />
+    <meta
+      name="twitter:description"
+      content="Poetry, thoughts, and digital reflections by Freddy Carias."
+    />
+    <meta
+      name="twitter:image"
+      content="https://freddycarias.com/images/jessica-christian-wuqYCTAYPH4-unsplash.jpg"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-S4HPZV3TH7"
+    ></script>
+
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "CreativeWork",
+        "name": "Think Room",
+        "url": "https://freddycarias.com",
+        "description": "A poetry and reflection gallery by Freddy Carias.",
+        "author": {
+          "@type": "Person",
+          "name": "Freddy Carias",
+          "url": "https://freddycarias.com"
+        },
+        "image": "https://freddycarias.com/images/jessica-christian-wuqYCTAYPH4-unsplash.jpg",
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": "https://freddycarias.com/#website"
+        },
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://freddycarias.com/home.shtml"
+        }
+      }
+    </script>
+
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-S4HPZV3TH7");
+    </script>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #0d0d0d
+          url("images/jessica-christian-wuqYCTAYPH4-unsplash.jpg") no-repeat
+          center center/cover;
+        font-family: "Merriweather", serif;
+        text-align: center;
+        color: #f8f1e7;
+        margin: 0;
+        position: relative;
+        overflow: hidden;
+        animation: zoomBackground 30s ease-in-out infinite alternate;
+      }
+      @keyframes zoomBackground {
+        from {
+          background-size: 100%;
+        }
+        to {
+          background-size: 110%;
+        }
+      }
+      .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 0;
+      }
+      .content {
+        max-width: 700px;
+        padding: 40px;
+        position: relative;
+        z-index: 1;
+        animation: fadeInContent 2s ease-in;
+      }
+      h1 {
+        font-size: 2.8rem;
+        margin-bottom: 1rem;
+        font-weight: normal;
+        animation: fadeInTitle 2s ease-in forwards;
+        opacity: 0;
+      }
+      p {
+        font-size: 1.3rem;
+        margin-bottom: 2rem;
+        font-style: italic;
+        animation: fadeInQuote 3s ease-in forwards;
+        opacity: 0;
+        animation-delay: 1s;
+      }
+      .btn-outline-light {
+        font-size: 1rem;
+        padding: 0.6rem 2.5rem;
+        border-radius: 30px;
+        animation: fadeInButton 4s ease-in forwards;
+        opacity: 0;
+        animation-delay: 2s;
+      }
+      footer {
+        position: absolute;
+        bottom: 10px;
+        width: 100%;
+        text-align: center;
+        font-size: 0.8rem;
+        color: #aaa;
+      }
+      @keyframes fadeInContent {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes fadeInTitle {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeInQuote {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeInButton {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="overlay"></div>
+
+    <div class="content">
+      <h1>Think Room</h1>
+      <p>
+        "If hell’s fury awaits my soul, then let it be— for God’s fate for me
+        must be to burn in its flames"
+      </p>
+      <a href="/home.shtml" class="btn btn-outline-light">Enter</a>
+    </div>
+
+    <footer
+      class="text-center py-3"
+      style="background: #111; color: #fff; font-size: 0.9rem"
+    >
+      <div>&copy; 2025 Freddy Carias. All Rights Reserved.</div>
+      <div>
+        Powered by
+        <a
+          href="https://techbyfreddy.com"
+          class="fw-bold text-decoration-none"
+          style="color: #fff"
+          target="_blank"
+        >
+          TechbyFreddy
+        </a>
+      </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+# Sensitive credentials - never commit these
+config.php
+admin_config.php
+Mysql Database info.txt
+
+# PHP error log
+error_log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/

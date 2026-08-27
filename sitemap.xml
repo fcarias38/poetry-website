@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This line defines the document as XML and specifies UTF-8 character encoding -->
+
+<urlset 
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- This defines the root of the sitemap and tells search engines to use the official sitemap protocol -->
+
+  <!-- Homepage of the site -->
+  <url>
+    <loc>https://freddycarias.com/</loc>
+    <!-- The main landing page -->
+    <changefreq>monthly</changefreq>
+    <!-- You update this page occasionally -->
+    <priority>1.0</priority>
+    <!-- Highest priority: it's the front door of your site -->
+  </url>
+
+  <!--  gallery page (the main interactive page users see) -->
+  <url>
+    <loc>https://freddycarias.com/home.shtml</loc>
+    <!-- Your gallery with modals and filters -->
+    <changefreq>monthly</changefreq>
+    <!-- Changes may happen when new poems are added -->
+    <priority>0.9</priority>
+    <!-- Very important, but not the absolute top page -->
+  </url>
+
+  <!-- All Poems (static SEO-friendly content for Google) -->
+  <url>
+    <loc>https://freddycarias.com/all_poems.php</loc>
+    <!-- This page lists all poems as full HTML for search engine indexing -->
+    <changefreq>weekly</changefreq>
+    <!-- Updated more frequently as you add new poems -->
+    <priority>1.0</priority>
+    <!-- Critical for SEO: make sure Google sees and indexes this -->
+  </url>
+
+</urlset>

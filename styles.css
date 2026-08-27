@@ -1,0 +1,40 @@
+pre#modalBody {
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+.poem-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2rem;
+  height: 250px; /* or however tall you want */
+}
+
+.snippet {
+  height: 4.5em; /* consistent space for 3 lines */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+
+.read-more-button {
+  margin-top: auto;
+  align-self: center;
+}
+
+.logo {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #222;
+  text-decoration: none;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+.logo:hover {
+  color: #000;
+}
+
+

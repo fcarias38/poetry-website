@@ -1,0 +1,26 @@
+RewriteEngine On
+
+# Redirect www to non-www AND force HTTPS
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} ^www\.freddycarias\.com [NC]
+RewriteRule ^ https://freddycarias.com%{REQUEST_URI} [L,R=301]
+
+
+# Enable Server‑Side Includes
+AddType text/html .shtml
+AddHandler server‑parsed .shtml
+Options +Includes
+
+# Block access to sensitive config files
+<FilesMatch "^(config|admin_config)\.php$">
+    Require all denied
+</FilesMatch>
+
+# 1) Redirect any direct *.shtml requests to extensionless URLs
+RewriteCond %{THE_REQUEST} \s/([^.]+)\.shtml[?\s] [NC]
+RewriteRule ^([^.]+)\.shtml$ /$1 [R=301,L]
+
+# 2) Internally rewrite extensionless URLs to their .shtml files
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([^/]+)$ $1.shtml [L]

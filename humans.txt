@@ -1,0 +1,12 @@
+/* TEAM */
+Creator: Freddy Carias
+Site: https://freddycarias.com
+Built: 2025
+
+/* TECHNOLOGY */
+Language: HTML5, CSS3, PHP, JavaScript
+Frameworks: Bootstrap 5
+
+/* THANKS */
+Poets, artists, and everyone feeling something.
+

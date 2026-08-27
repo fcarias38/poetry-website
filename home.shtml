@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Think Room – A Poetry Gallery by Freddy Carias</title>
+
+    <!-- SEO Meta -->
+    <meta
+      name="description"
+      content="Think Room is a poetry gallery by Freddy Carias — a space to read, reflect, and feel."
+    />
+    <meta name="author" content="Freddy Carias" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://freddycarias.com/home.shtml" />
+
+    <!-- Open Graph Meta for social sharing -->
+    <meta property="og:title" content="Think Room | Poetry Gallery" />
+    <meta
+      property="og:description"
+      content="Think Room is a poetry gallery by Freddy Carias — a space to read, reflect, and feel."
+    />
+    <meta
+      property="og:image"
+      content="https://freddycarias.com/images/jessica-christian-wuqYCTAYPH4-unsplash.jpg"
+    />
+    <meta property="og:url" content="https://freddycarias.com/home.shtml" />
+    <meta property="og:type" content="website" />
+
+    <!-- Tell Google about the “All Poems” page -->
+    <link rel="alternate" href="/all-poems.php" hreflang="en" />
+
+    <!-- CSS Links -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link href="styles.css" rel="stylesheet" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Think Room | Poetry Gallery",
+        "url": "https://freddycarias.com/home.shtml",
+        "description": "A poetry and reflection gallery by Freddy Carias — a space to read, reflect, and feel.",
+        "author": {
+          "@type": "Person",
+          "name": "Freddy Carias",
+          "url": "https://freddycarias.com"
+        },
+        "mainEntity": {
+          "@type": "CollectionPage",
+          "name": "Poems",
+          "url": "https://freddycarias.com/home.shtml#poems"
+        }
+      }
+    </script>
+
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: "Merriweather", serif;
+        background-color: #fafafa;
+        color: #333;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        min-height: 100vh;
+      }
+      nav {
+        width: 220px;
+        background: #eaeaea;
+        padding: 2rem 1rem;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        transition: all 0.3s ease;
+      }
+      nav .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #222;
+        margin-bottom: 2rem;
+      }
+      nav .nav-links {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 1.5rem;
+      }
+      nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        text-align: center;
+        width: 100%;
+      }
+      nav ul li a {
+        text-decoration: none;
+        color: #555;
+        font-size: 1rem;
+        transition: color 0.3s;
+        display: block;
+        padding: 0.5rem 0;
+      }
+      nav ul li a:hover {
+        color: #000;
+      }
+      .content {
+        margin-left: 220px;
+        width: calc(100% - 220px);
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+      }
+      header {
+        text-align: center;
+        padding: 4rem 1rem 2rem;
+        background: #f8f9fa;
+      }
+      header h1 {
+        font-size: 2.2rem;
+        margin-bottom: 1rem;
+        color: #222;
+      }
+      header p {
+        font-style: italic;
+        color: #555;
+        font-size: 1rem;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .filter-buttons {
+        text-align: center;
+        margin: 2rem 0;
+      }
+      .filter-buttons button {
+        background: none;
+        border: 1px solid #333;
+        padding: 0.5rem 1.5rem;
+        margin: 0.5rem;
+        font-family: "Merriweather", serif;
+        cursor: pointer;
+        transition: background 0.3s, color 0.3s;
+      }
+      .filter-buttons button:hover,
+      .filter-buttons button.active {
+        background: #333;
+        color: #fff;
+      }
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        padding: 2rem 0;
+      }
+      .poem-card {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+      .poem-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      }
+      .footer {
+        text-align: center;
+        width: 100%;
+        padding: 1rem;
+        background: #f8f9fa; /* matches your header background */
+        font-size: 0.9rem;
+        color: #666;
+        border-top: 1px solid #ddd;
+        margin-top: auto;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1050;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.6);
+      }
+      .modal-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 600px;
+        border-radius: 10px;
+      }
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+      }
+      @media (max-width: 768px) {
+        nav {
+          width: 100%;
+          height: auto;
+          position: relative;
+          flex-direction: column;
+          padding: 0;
+          box-shadow: none;
+        }
+
+        .content {
+          margin-left: 0;
+          width: 100%;
+        }
+
+        nav .nav-links {
+          gap: 0.5rem;
+        }
+
+        .sidebar {
+          padding: 1rem 0;
+        }
+
+        .collapse {
+          background-color: #eaeaea;
+        }
+
+        .navbar-toggler {
+          border: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <!-- Mobile Navbar -->
+      <div
+        class="navbar navbar-light d-md-none w-100 justify-content-between px-3 py-2"
+      >
+        <a href="home.shtml" class="logo navbar-brand">Think Room</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#mobileNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+
+      <!-- Desktop Sidebar -->
+      <div
+        class="sidebar d-none d-md-flex flex-column align-items-center w-100 h-100"
+      >
+        <a href="home.shtml" class="logo">Think Room</a>
+        <ul class="nav-links">
+          <li><a href="home.shtml">Home</a></li>
+          <li><a href="#poems">Poems</a></li>
+          <li><a href="#" id="authorBtn">Author</a></li>
+          <li><a href="#" id="contactBtn">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Mobile Collapsible Sidebar -->
+      <div class="collapse d-md-none w-100 text-center bg-light" id="mobileNav">
+        <ul class="nav-links flex-column py-2">
+          <li><a href="home.shtml">Home</a></li>
+          <li><a href="#poems">Poems</a></li>
+          <li><a href="#" id="authorBtnMobile">Author</a></li>
+          <li><a href="#" id="contactBtnMobile">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="content">
+      <header>
+        <h1>Think Room</h1>
+        <p>
+          "If hell’s fury awaits my soul, then let it be— for God’s fate for me
+          must be to burn in its flames."
+        </p>
+      </header>
+
+      <div class="filter-buttons"></div>
+
+      <section id="poems" class="gallery"></section>
+
+      <div
+        class="footer text-center py-3"
+        style="background: #f8f9fa; font-size: 0.9rem"
+      >
+        <div>
+          © 2025 Freddy Carias. All Rights Reserved. Powered by
+          <a
+            href="https://techbyfreddy.com"
+            class="fw-bold text-decoration-none"
+            style="color: #666"
+            target="_blank"
+            >TechbyFreddy</a
+          >
+        </div>
+        <div class="mt-1">
+          <a
+            href="login.php"
+            style="color: #666; font-size: 0.85rem; text-decoration: none"
+          >
+            Login
+          </a>
+        </div>
+      </div>
+
+      <!-- Poem Modal -->
+      <div id="poemModal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeModal('poemModal')">&times;</span>
+          <h2 id="modalTitle"></h2>
+          <pre id="modalBody" style="white-space: pre-wrap"></pre>
+
+          <button
+            class="filter-button"
+            id="readMoreBtn"
+            style="margin: 10px 0; display: none"
+            onclick="expandPoem()"
+          >
+            Read More
+          </button>
+
+          <div
+            style="
+              margin-top: 20px;
+              display: flex;
+              justify-content: space-around;
+              align-items: center;
+              flex-wrap: wrap;
+              gap: 10px;
+            "
+          >
+            <button class="filter-button" onclick="likePoem()">
+              <i class="bi bi-heart"></i> <span id="likeCount">0</span> Like
+            </button>
+            <button class="filter-button" onclick="shareTwitter()">
+              <i class="bi bi-twitter"></i> Share
+            </button>
+            <button class="filter-button" onclick="shareFacebook()">
+              <i class="bi bi-facebook"></i> Share
+            </button>
+            <button class="filter-button" onclick="showShareLink()">
+              <i class="bi bi-link-45deg"></i> Get Link
+            </button>
+            <button class="filter-button" onclick="openCommentForm()">
+              <i class="bi bi-chat-dots"></i> Comment
+            </button>
+          </div>
+
+          <!-- Always show comment list -->
+          <h4
+            style="
+              margin-top: 20px;
+              font-size: 0.95rem;
+              font-weight: 500;
+              color: #666;
+              margin-bottom: 8px;
+            "
+          >
+            Comments
+          </h4>
+
+          <div id="commentsList" style="margin-top: 10px"></div>
+
+          <!-- Hidden input form that toggles with 'Comment' button -->
+          <div id="commentForm" style="margin-top: 20px; display: none">
+            <input
+              type="text"
+              id="commentName"
+              placeholder="Your name (optional)"
+              style="width: 100%; padding: 10px; margin-bottom: 10px"
+            />
+            <textarea
+              id="commentInput"
+              placeholder="Write your comment..."
+              style="width: 100%; padding: 10px; margin-bottom: 10px"
+            ></textarea>
+
+            <button class="filter-button" onclick="saveComment()">
+              Save Comment
+            </button>
+          </div>
+
+          <!-- Hidden link box (stays right below) -->
+          <div id="shareLinkBox" style="display: none; margin-top: 10px">
+            <input
+              type="text"
+              id="shareLinkInput"
+              readonly
+              style="width: 100%; padding: 8px; margin-bottom: 10px"
+            />
+            <button onclick="copyShareLink()" class="filter-button">
+              Copy Link
+            </button>
+            <span id="copyConfirm" style="display: none; color: green"
+              >✅ Copied!</span
+            >
+          </div>
+        </div>
+      </div>
+      <!-- end of .modal-content -->
+    </div>
+    <!-- end of #poemModal -->
+
+    <!-- Author Modal -->
+    <div id="authorModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('authorModal')">&times;</span>
+        <h2>About the Author</h2>
+        <p>
+          Freddy Carias is the voice behind <strong>Think Room</strong> — a
+          quiet gallery of thoughts, poetry, and reflection.
+        </p>
+
+        <hr style="margin: 2rem 0; border: none; border-top: 1px solid #ccc" />
+
+        <div
+          style="
+            font-size: 0.95rem;
+            color: #444;
+            line-height: 1.6;
+            text-align: center;
+          "
+        >
+          <p style="margin-bottom: 0.5rem">
+            <strong>Support</strong>
+            <i
+              class="bi bi-heart-fill"
+              style="margin-left: 6px; color: #e63946"
+            ></i>
+          </p>
+          <p>
+            Zelle: <strong style="color: #222">fcarias38@outlook.com</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div id="contactModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('contactModal')">&times;</span>
+        <h2>Contact Think Room</h2>
+        <form method="POST" action="send_contact.php">
+          <input
+            type="text"
+            name="name"
+            placeholder="Your Name"
+            required
+            style="width: 100%; margin: 10px 0; padding: 10px"
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Your Email"
+            required
+            style="width: 100%; margin: 10px 0; padding: 10px"
+          />
+          <textarea
+            name="message"
+            rows="5"
+            placeholder="Your Message"
+            required
+            style="width: 100%; margin: 10px 0; padding: 10px"
+          ></textarea>
+          <button
+            type="submit"
+            style="
+              padding: 10px 20px;
+              background: #222;
+              color: #fff;
+              border: none;
+              border-radius: 5px;
+            "
+          >
+            Send Message
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      let fullPoemText = "";
+
+      function openPoem(card) {
+        // RESET FIRST
+        resetPoemModalState();
+        const title = card.querySelector("h2").innerText;
+        const fullText = card.getAttribute("data-full");
+
+        document.getElementById("modalTitle").innerText = title;
+        document.getElementById("modalBody").innerText = fullText;
+        document.getElementById("readMoreBtn").style.display = "none";
+        document.getElementById("poemModal").style.display = "block";
+
+        // Load likes and comments *after* resetting
+        loadLikesAndComments(title);
+
+        window.location.hash = "poem=" + encodeURIComponent(title);
+      }
+
+      function resetPoemModalState() {
+        document.getElementById("commentForm").style.display = "none";
+        document.getElementById("commentInput").value = "";
+        document.getElementById("commentsList").innerHTML = "";
+
+        document.getElementById("shareLinkBox").style.display = "none";
+        document.getElementById("shareLinkInput").value = "";
+        document.getElementById("copyConfirm").style.display = "none";
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+
+        if (modalId === "poemModal") {
+          history.replaceState(null, "", window.location.pathname); // <- YES, keep this
+          resetPoemModalState(); // <- also needed to clear open states
+        }
+      }
+
+      function filterPoems(category, btn) {
+        const cards = document.querySelectorAll(".poem-card");
+        document
+          .querySelectorAll(".filter-buttons button")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        cards.forEach((card) => {
+          if (category === "all" || card.dataset.category === category) {
+            card.style.display = "block";
+          } else {
+            card.style.display = "none";
+          }
+        });
+      }
+
+      document.getElementById("authorBtn").onclick = function () {
+        document.getElementById("authorModal").style.display = "block";
+      };
+      document.getElementById("contactBtn").onclick = function () {
+        document.getElementById("contactModal").style.display = "block";
+      };
+
+      window.onclick = function (event) {
+        const modals = ["poemModal", "authorModal", "contactModal"];
+        modals.forEach((id) => {
+          const modal = document.getElementById(id);
+          if (event.target === modal) {
+            modal.style.display = "none";
+            if (id === "poemModal") {
+              history.replaceState(null, "", window.location.pathname);
+            }
+          }
+        });
+      };
+
+      function likePoem() {
+        const title = document.getElementById("modalTitle").innerText;
+
+        fetch("update_likes.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: title }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("likeCount").innerText = data.likes;
+          });
+      }
+
+      function saveComment() {
+        const title = document.getElementById("modalTitle").innerText;
+        const name = document.getElementById("commentName").value.trim();
+        const comment = document.getElementById("commentInput").value.trim();
+
+        if (comment !== "") {
+          fetch("save_comment.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              title: title,
+              comment: comment,
+              name: name,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              document.getElementById("commentInput").value = "";
+              displayComments(data.comments);
+              document.getElementById("commentForm").style.display = "none";
+            });
+        }
+      }
+
+      function loadLikesAndComments(title) {
+        fetch("get_likes_comments.php?title=" + encodeURIComponent(title))
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("likeCount").innerText = data.likes;
+            displayComments(data.comments);
+          });
+      }
+      function displayComments(comments) {
+        const commentsList = document.getElementById("commentsList");
+        commentsList.innerHTML = "";
+
+        if (comments.length === 0) {
+          const empty = document.createElement("p");
+          empty.innerText = "No comments yet. Be the first!";
+          empty.style.fontStyle = "italic";
+          empty.style.color = "#777";
+          commentsList.appendChild(empty);
+        } else {
+          comments.forEach((comment) => {
+            const p = document.createElement("p");
+            const namePrefix = comment.name
+              ? `<strong>${comment.name}:</strong> `
+              : "";
+            const time = timeAgo(comment.created_at);
+            p.innerHTML = `${namePrefix}${comment.comment}<br><span style="font-size: 0.8em; color: #999;">${time}</span>`;
+            p.style.padding = "8px";
+            p.style.border = "1px solid #ddd";
+            p.style.borderRadius = "4px";
+            p.style.marginBottom = "10px";
+            p.style.backgroundColor = "#f9f9f9";
+            commentsList.appendChild(p);
+          });
+        }
+      }
+
+      function shareTwitter() {
+        const title = document.getElementById("modalTitle").innerText;
+        const pageUrl = encodeURIComponent(window.location.href);
+
+        const text = encodeURIComponent(
+          `Check out the poem "${title}" at Think Room!`
+        );
+
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${pageUrl}`;
+        window.open(twitterUrl, "_blank");
+      }
+
+      function shareFacebook() {
+        const pageUrl = encodeURIComponent(window.location.href);
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${pageUrl}`;
+
+        window.open(facebookUrl, "_blank");
+      }
+
+      function loadPoems() {
+        fetch("get_poems.php")
+          .then((response) => response.json())
+          .then((data) => {
+            const gallery = document.getElementById("poems");
+            const filterContainer = document.querySelector(".filter-buttons");
+            gallery.innerHTML = "";
+            filterContainer.innerHTML = ""; // Clear old filter buttons
+
+            const categories = new Set(); // <-- collect categories here
+
+            data.forEach((poem) => {
+              categories.add(poem.category); // <-- build up set of unique categories
+
+              const card = document.createElement("div");
+              card.className = "poem-card";
+              card.setAttribute("data-category", poem.category);
+              card.setAttribute("data-full", poem.body);
+              card.onclick = function () {
+                openPoem(this);
+              };
+
+              card.innerHTML = `
+          <div style="display: flex; flex-direction: column; height: 100%;">
+            <h2>${poem.title}</h2>
+            <p class="snippet">${poem.body.substring(0, 100)}...</p>
+            <button class="filter-button read-more-button">Read More</button>
+          </div>
+        `;
+
+              gallery.appendChild(card);
+            });
+
+            // After building all cards, now build the filter buttons:
+            const allButton = document.createElement("button");
+            allButton.className = "active";
+            allButton.innerText = "All";
+            allButton.onclick = function () {
+              filterPoems("all", this);
+            };
+            filterContainer.appendChild(allButton);
+
+            categories.forEach((category) => {
+              const button = document.createElement("button");
+              button.innerText =
+                category.charAt(0).toUpperCase() + category.slice(1);
+              button.onclick = function () {
+                filterPoems(category, this);
+              };
+              filterContainer.appendChild(button);
+            });
+          });
+      }
+      document.addEventListener("DOMContentLoaded", () => {
+        loadPoems();
+        checkHashForPoem();
+
+        document.getElementById("authorBtnMobile").onclick = function () {
+          document.getElementById("authorModal").style.display = "block";
+        };
+
+        document.getElementById("contactBtnMobile").onclick = function () {
+          document.getElementById("contactModal").style.display = "block";
+        };
+      });
+
+      function copyShareLink() {
+        const input = document.getElementById("shareLinkInput");
+        input.select();
+        document.execCommand("copy");
+
+        const confirm = document.getElementById("copyConfirm");
+        confirm.style.display = "inline";
+
+        // Delay hiding both the confirmation and share box
+        setTimeout(() => {
+          confirm.style.display = "none";
+          document.getElementById("shareLinkBox").style.display = "none";
+        }, 2000);
+      }
+
+      function openCommentForm() {
+        const form = document.getElementById("commentForm");
+        form.style.display = form.style.display === "block" ? "none" : "block";
+      }
+
+      function showShareLink() {
+        const shareBox = document.getElementById("shareLinkBox");
+        const isVisible = shareBox.style.display === "block";
+        shareBox.style.display = isVisible ? "none" : "block";
+
+        if (!isVisible) {
+          const input = document.getElementById("shareLinkInput");
+          const title = document.getElementById("modalTitle").innerText;
+          const url =
+            window.location.href.split("#")[0] +
+            "#poem=" +
+            encodeURIComponent(title);
+          input.value = url;
+        }
+      }
+
+      // Auto-open poem from URL hash
+      function checkHashForPoem() {
+        const hash = window.location.hash;
+        if (hash.startsWith("#poem=")) {
+          const title = decodeURIComponent(hash.split("=")[1]);
+
+          // Wait for poems to load, then try to find the card
+          const interval = setInterval(() => {
+            const cards = document.querySelectorAll(".poem-card");
+            for (const card of cards) {
+              if (card.querySelector("h2").innerText.trim() === title.trim()) {
+                clearInterval(interval);
+                openPoem(card);
+                break;
+              }
+            }
+          }, 200);
+
+          // Optional: Stop trying after 5 seconds
+          setTimeout(() => clearInterval(interval), 5000);
+        }
+      }
+
+      function timeAgo(utcDateStr) {
+        const date = new Date(utcDateStr); // this assumes UTC
+        const now = new Date();
+        const diff = Math.floor((now - date) / 1000); // seconds
+
+        if (diff < 0) return "just now";
+        if (diff < 60) return `${diff} second${diff !== 1 ? "s" : ""} ago`;
+        if (diff < 3600)
+          return `${Math.floor(diff / 60)} minute${
+            Math.floor(diff / 60) !== 1 ? "s" : ""
+          } ago`;
+        if (diff < 86400)
+          return `${Math.floor(diff / 3600)} hour${
+            Math.floor(diff / 3600) !== 1 ? "s" : ""
+          } ago`;
+        if (diff < 604800)
+          return `${Math.floor(diff / 86400)} day${
+            Math.floor(diff / 86400) !== 1 ? "s" : ""
+          } ago`;
+
+        return date.toLocaleDateString(); // fallback
+      }
+    </script>
+    <!-- Bootstrap JS Bundle with Popper.js (Required for the accordion) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
