@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Auto Deploy to Bluehost",
+      "trigger": "PostFileSave",
+      "matcher": "\\.(php|html|shtml|css|js)$",
+      "action": {
+        "type": "command",
+        "command": "powershell -ExecutionPolicy Bypass -File \".kiro/deploy.ps1\""
+      }
+    }
+  ]
+}

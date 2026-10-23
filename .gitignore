@@ -1,7 +1,12 @@
 # Sensitive credentials - never commit these
 config.php
 admin_config.php
+admin_pass.hash
 Mysql Database info.txt
+.kiro/deploy.ps1
+
+# Password reset tokens (contain live single-use tokens)
+reset_tokens/
 
 # PHP error log
 error_log

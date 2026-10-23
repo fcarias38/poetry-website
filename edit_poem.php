@@ -1,11 +1,39 @@
 <?php
-session_start();
+require 'csrf.php';   // starts the session
 if (!isset($_SESSION['logged_in'])) {
     header("Location: login.php");
     exit;
 }
 
 include 'config.php';
+
+/**
+ * Convert a title to a URL-safe slug.
+ */
+function makeSlug(string $title): string {
+    $slug = strtolower(trim($title));
+    $slug = preg_replace('/[^a-z0-9]+/', '-', $slug);
+    return trim($slug, '-');
+}
+
+/**
+ * Return a slug that doesn't already exist in the poems table,
+ * excluding the poem currently being edited.
+ */
+function uniqueSlug(mysqli $conn, string $base, int $excludeId = 0): string {
+    $candidate = $base;
+    $n = 2;
+    while (true) {
+        $stmt = $conn->prepare("SELECT id FROM poems WHERE slug = ? AND id != ?");
+        $stmt->bind_param("si", $candidate, $excludeId);
+        $stmt->execute();
+        $stmt->store_result();
+        if ($stmt->num_rows === 0) {
+            return $candidate;
+        }
+        $candidate = $base . '-' . $n++;
+    }
+}
 
 if (!isset($_GET['id'])) {
     echo "No poem ID provided.";
@@ -28,12 +56,19 @@ if (!$poem) {
 
 // Handle update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!csrf_validate($_POST['csrf_token'] ?? null)) {
+        http_response_code(403);
+        echo "Invalid CSRF token.";
+        exit;
+    }
     $title = trim($_POST['title']);
     $category = trim($_POST['category']);
     $body = trim($_POST['body']);
 
-    $stmt = $conn->prepare("UPDATE poems SET title = ?, category = ?, body = ? WHERE id = ?");
-    $stmt->bind_param("sssi", $title, $category, $body, $id);
+    $slug = uniqueSlug($conn, makeSlug($title), $id);
+
+    $stmt = $conn->prepare("UPDATE poems SET title = ?, category = ?, body = ?, slug = ? WHERE id = ?");
+    $stmt->bind_param("ssssi", $title, $category, $body, $slug, $id);
 
     if ($stmt->execute()) {
         header("Location: dashboard.php?success=1");
@@ -54,6 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="container py-5">
     <h1>Edit Poem</h1>
     <form method="POST">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES) ?>">
         <div class="mb-3">
             <label>Title</label>
             <input class="form-control bg-dark text-light" name="title" value="<?= htmlspecialchars($poem['title']) ?>" required>

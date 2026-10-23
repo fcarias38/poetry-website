@@ -4,821 +4,1083 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Think Room – A Poetry Gallery by Freddy Carias</title>
-
-    <!-- SEO Meta -->
-    <meta
-      name="description"
-      content="Think Room is a poetry gallery by Freddy Carias — a space to read, reflect, and feel."
-    />
+    <meta name="description" content="Think Room is a poetry gallery by Freddy Carias — a space to read, reflect, and feel." />
     <meta name="author" content="Freddy Carias" />
     <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://freddycarias.com/home.shtml" />
-
-    <!-- Open Graph Meta for social sharing -->
+    <link rel="canonical" href="https://freddycarias.com/gallery" />
     <meta property="og:title" content="Think Room | Poetry Gallery" />
-    <meta
-      property="og:description"
-      content="Think Room is a poetry gallery by Freddy Carias — a space to read, reflect, and feel."
-    />
-    <meta
-      property="og:image"
-      content="https://freddycarias.com/images/jessica-christian-wuqYCTAYPH4-unsplash.jpg"
-    />
-    <meta property="og:url" content="https://freddycarias.com/home.shtml" />
+    <meta property="og:description" content="Think Room is a poetry gallery by Freddy Carias — a space to read, reflect, and feel." />
+    <meta property="og:image" content="https://freddycarias.com/images/jessica-christian-wuqYCTAYPH4-unsplash.jpg" />
+    <meta property="og:url" content="https://freddycarias.com/gallery" />
     <meta property="og:type" content="website" />
 
-    <!-- Tell Google about the “All Poems” page -->
-    <link rel="alternate" href="/all-poems.php" hreflang="en" />
-
-    <!-- CSS Links -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
-      rel="stylesheet"
-    />
-    <link href="styles.css" rel="stylesheet" />
-
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        "name": "Think Room | Poetry Gallery",
-        "url": "https://freddycarias.com/home.shtml",
-        "description": "A poetry and reflection gallery by Freddy Carias — a space to read, reflect, and feel.",
-        "author": {
-          "@type": "Person",
-          "name": "Freddy Carias",
-          "url": "https://freddycarias.com"
-        },
-        "mainEntity": {
-          "@type": "CollectionPage",
-          "name": "Poems",
-          "url": "https://freddycarias.com/home.shtml#poems"
-        }
-      }
-    </script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap" rel="stylesheet" />
 
     <style>
-      html {
-        scroll-behavior: smooth;
+      :root {
+        --bg:        #0e0e10;
+        --panel:     #161618;
+        --surface:   #1b1b1e;
+        --surface-2: #202024;
+        --border:    rgba(255,255,255,0.09);
+        --border-2:  rgba(255,255,255,0.14);
+        --text:      #ededed;
+        --text-dim:  #9a978f;
+        --text-mute: #6b6862;
+        --accent:    #c8a96e;
+        --accent-d:  #b2965e;
       }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+
       body {
-        margin: 0;
-        font-family: "Merriweather", serif;
-        background-color: #fafafa;
-        color: #333;
-        overflow-x: hidden;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
+        font-family: "Inter", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text-dim);
         min-height: 100vh;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
       }
-      nav {
-        width: 220px;
-        background: #eaeaea;
-        padding: 2rem 1rem;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        height: 100vh;
-        position: fixed;
-        left: 0;
+
+      /* ───────────────────────────────
+         TOP NAVIGATION
+      ─────────────────────────────── */
+      .topnav {
+        position: sticky;
         top: 0;
+        z-index: 200;
+        background: rgba(22,22,24,0.92);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border);
         display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
         align-items: center;
-        transition: all 0.3s ease;
+        justify-content: space-between;
+        padding: 0 2.5rem;
+        height: 62px;
       }
-      nav .logo {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #222;
-        margin-bottom: 2rem;
-      }
-      nav .nav-links {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 1.5rem;
-      }
-      nav ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        text-align: center;
-        width: 100%;
-      }
-      nav ul li a {
-        text-decoration: none;
-        color: #555;
-        font-size: 1rem;
-        transition: color 0.3s;
-        display: block;
-        padding: 0.5rem 0;
-      }
-      nav ul li a:hover {
-        color: #000;
-      }
-      .content {
-        margin-left: 220px;
-        width: calc(100% - 220px);
-        padding: 2rem;
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-      }
-      header {
-        text-align: center;
-        padding: 4rem 1rem 2rem;
-        background: #f8f9fa;
-      }
-      header h1 {
-        font-size: 2.2rem;
-        margin-bottom: 1rem;
-        color: #222;
-      }
-      header p {
+      .topnav-brand {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.3rem;
+        font-weight: 600;
         font-style: italic;
-        color: #555;
-        font-size: 1rem;
-        max-width: 800px;
-        margin: 0 auto;
+        color: var(--text);
+        text-decoration: none;
+        letter-spacing: 0.03em;
+        white-space: nowrap;
+        display: flex; align-items: center; gap: 0.55rem;
       }
-      .filter-buttons {
-        text-align: center;
-        margin: 2rem 0;
+      .topnav-brand:hover { color: #fff; }
+      .brand-mark {
+        width: 30px; height: 30px; border-radius: 7px;
+        background: linear-gradient(145deg, var(--accent), var(--accent-d));
+        display: inline-flex; align-items: center; justify-content: center;
+        font-family: "Cormorant Garamond", serif; font-weight: 600;
+        font-size: 1.1rem; color: #1a1408; font-style: italic; flex-shrink: 0;
       }
-      .filter-buttons button {
-        background: none;
-        border: 1px solid #333;
-        padding: 0.5rem 1.5rem;
-        margin: 0.5rem;
-        font-family: "Merriweather", serif;
-        cursor: pointer;
-        transition: background 0.3s, color 0.3s;
-      }
-      .filter-buttons button:hover,
-      .filter-buttons button.active {
-        background: #333;
-        color: #fff;
-      }
-      .gallery {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      .topnav-links {
+        display: flex;
+        align-items: center;
         gap: 2rem;
-        padding: 2rem 0;
+        list-style: none;
       }
-      .poem-card {
-        background: white;
-        border: 1px solid #ddd;
-        border-radius: 12px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
-        padding: 2rem;
+      .topnav-links a {
+        text-decoration: none;
+        color: var(--text-dim);
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        transition: color 0.2s;
+      }
+      .topnav-links a:hover { color: var(--accent); }
+
+      /* Topics dropdown */
+      .topnav-dropdown { position: relative; }
+      .topnav-dropdown-menu {
+        display: none; position: absolute; top: 140%; left: 0;
+        background: var(--panel); border: 1px solid var(--border);
+        border-radius: 10px; padding: 0.5rem; min-width: 180px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.4); z-index: 300;
+        flex-direction: column; gap: 0.1rem;
+      }
+      .topnav-dropdown-menu.open { display: flex; }
+      .topnav-dropdown-menu a {
+        padding: 0.5rem 0.7rem; border-radius: 6px; color: var(--text-dim);
+        font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+        transition: all 0.15s; cursor: pointer;
+      }
+      .topnav-dropdown-menu a:hover { color: var(--accent); background: var(--surface); }
+
+      .topnav-hamburger {
+        display: none;
+        background: none;
+        border: none;
+        color: var(--text-dim);
+        font-size: 1.4rem;
         cursor: pointer;
-        transition: transform 0.3s, box-shadow 0.3s;
+        padding: 0;
+        line-height: 1;
       }
-      .poem-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+
+      /* Mobile dropdown */
+      .mobile-menu {
+        display: none;
+        background: var(--panel);
+        border-bottom: 1px solid var(--border);
+        flex-direction: column;
+        padding: 0.5rem 1.4rem 1rem;
+        position: sticky;
+        top: 62px;
+        z-index: 199;
       }
-      .footer {
-        text-align: center;
-        width: 100%;
-        padding: 1rem;
-        background: #f8f9fa; /* matches your header background */
-        font-size: 0.9rem;
-        color: #666;
-        border-top: 1px solid #ddd;
-        margin-top: auto;
+      .mobile-menu.open { display: flex; }
+      .mobile-menu a {
+        color: var(--text-dim);
+        text-decoration: none;
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid var(--border);
+        transition: color 0.2s;
       }
-      .modal {
+      .mobile-menu a:last-child { border-bottom: none; }
+      .mobile-menu a:hover { color: var(--accent); }
+
+      /* Mobile topics group */
+      .mobile-topics-label {
+        font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase;
+        color: var(--text-mute); padding: 0.9rem 0 0.4rem; border-bottom: none;
+      }
+      .mobile-menu #mobileTopics {
+        display: flex; flex-wrap: wrap; gap: 0.5rem;
+        padding: 0.2rem 0 0.9rem; border-bottom: 1px solid var(--border);
+      }
+      .mobile-menu #mobileTopics a {
+        border: 1px solid var(--border); border-radius: 999px;
+        padding: 0.45rem 0.9rem; font-size: 0.62rem; letter-spacing: 0.1em;
+        color: var(--text-dim); border-bottom: 1px solid var(--border);
+      }
+      .mobile-menu #mobileTopics a:hover { color: var(--accent); border-color: var(--border-2); }
+
+      /* ───────────────────────────────
+         MASTHEAD
+      ─────────────────────────────── */
+      .masthead {
+        padding: 3.5rem 2.5rem 2rem;
+        border-bottom: 1px solid var(--border);
+        position: relative;
+        background: radial-gradient(900px 400px at 15% 0%, rgba(200,169,110,0.06), transparent 60%);
+      }
+      .masthead::after {
+        content: "";
+        position: absolute;
+        bottom: -1px; left: 2.5rem;
+        width: 48px; height: 2px;
+        background: var(--accent);
+      }
+      .masthead-eyebrow {
+        font-size: 0.64rem;
+        font-weight: 600;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 0.7rem;
+      }
+      .masthead h1 {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(2rem, 5vw, 3.6rem);
+        font-weight: 400;
+        font-style: italic;
+        color: var(--text);
+        line-height: 1.1;
+        letter-spacing: -0.01em;
+      }
+      .masthead-sub {
+        font-size: 0.72rem;
+        color: var(--text-mute);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        margin-top: 0.9rem;
+      }
+
+      /* ───────────────────────────────
+         FILTER BAR
+      ─────────────────────────────── */
+      .filter-bar {
+        padding: 1rem 2.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .filter-bar::-webkit-scrollbar { display: none; }
+      .filter-bar button {
+        background: none;
+        border: none;
+        padding: 0.25rem 0;
+        font-family: "Inter", sans-serif;
+        font-size: 0.66rem;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        cursor: pointer;
+        color: var(--text-mute);
+        transition: color 0.2s;
+        white-space: nowrap;
+        position: relative;
+        flex-shrink: 0;
+      }
+      .filter-bar button::after {
+        content: "";
+        position: absolute;
+        bottom: -2px; left: 0;
+        width: 0; height: 2px;
+        background: var(--accent);
+        transition: width 0.25s;
+      }
+      .filter-bar button:hover { color: var(--text-dim); }
+      .filter-bar button:hover::after,
+      .filter-bar button.active::after { width: 100%; }
+      .filter-bar button.active { color: var(--accent); }
+      .filter-sep {
+        width: 1px; height: 10px;
+        background: var(--border);
+        flex-shrink: 0;
+      }
+
+      /* ───────────────────────────────
+         MASONRY GALLERY
+      ─────────────────────────────── */
+      .gallery-wrap {
+        padding: 2.5rem 2.5rem 3rem;
+      }
+      .masonry {
+        columns: 3;
+        column-gap: 1.6rem;
+      }
+      @media (max-width: 1000px) { .masonry { columns: 2; } }
+      @media (max-width: 600px)  { .masonry { columns: 1; } }
+
+      .poem-card {
+        break-inside: avoid;
+        margin-bottom: 1.6rem;
+        cursor: pointer;
+        text-decoration: none;
+        display: block;
+        color: inherit;
+      }
+      .card-inner {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.8rem 1.6rem 1.4rem;
+        position: relative;
+        overflow: hidden;
+        transition: background 0.25s, border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+      }
+      .poem-card:hover .card-inner {
+        background: var(--surface-2);
+        border-color: var(--border-2);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      }
+      .card-inner::before {
+        content: "";
+        position: absolute;
+        left: 0; top: 0;
+        width: 3px; height: 0;
+        background: var(--accent);
+        transition: height 0.35s ease;
+      }
+      .poem-card:hover .card-inner::before { height: 100%; }
+
+      .card-category {
+        font-size: 0.58rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 0.8rem;
+      }
+      .card-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.45rem;
+        font-weight: 500;
+        color: var(--text);
+        line-height: 1.3;
+        margin-bottom: 0.9rem;
+        letter-spacing: 0.01em;
+      }
+      .poem-card.featured .card-title { font-size: 1.85rem; }
+
+      .card-snippet {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1rem;
+        color: var(--text-dim);
+        line-height: 1.8;
+        font-style: italic;
+        font-weight: 300;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+      }
+      .card-footer {
+        margin-top: 1.3rem;
+        display: flex;
+        align-items: center;
+      }
+      .card-read {
+        font-size: 0.6rem;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--text-mute);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: color 0.2s;
+      }
+      .poem-card:hover .card-read { color: var(--accent); }
+      .card-read i { transition: transform 0.2s; }
+      .poem-card:hover .card-read i { transform: translateX(3px); }
+
+      /* ───────────────────────────────
+         FOOTER
+      ─────────────────────────────── */
+      .page-footer {
+        padding: 1.6rem 2.5rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.64rem;
+        color: var(--text-mute);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .page-footer a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+      .page-footer a:hover { color: var(--accent); }
+
+      /* ───────────────────────────────
+         POEM READER PANEL
+      ─────────────────────────────── */
+      .reader-overlay {
         display: none;
         position: fixed;
-        z-index: 1050;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.6);
+        inset: 0;
+        z-index: 500;
       }
-      .modal-content {
-        background-color: #fff;
-        margin: 10% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-        max-width: 600px;
-        border-radius: 10px;
-      }
-      .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
+      .reader-overlay.open { display: block; }
+
+      .reader-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(3px);
         cursor: pointer;
       }
-      .close:hover,
-      .close:focus {
-        color: black;
-        text-decoration: none;
+
+      .reader-panel {
+        position: absolute;
+        top: 0; right: 0;
+        width: min(560px, 100vw);
+        height: 100%;
+        background: var(--panel);
+        border-left: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        animation: slideIn 0.36s cubic-bezier(0.32,0.72,0,1);
       }
-      @media (max-width: 768px) {
-        nav {
-          width: 100%;
-          height: auto;
-          position: relative;
-          flex-direction: column;
-          padding: 0;
-          box-shadow: none;
-        }
+      @keyframes slideIn {
+        from { transform: translateX(100%); }
+        to   { transform: translateX(0); }
+      }
 
-        .content {
-          margin-left: 0;
-          width: 100%;
-        }
+      .reader-header {
+        padding: 1.8rem 2rem 1.2rem;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        flex-shrink: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      .reader-meta { flex: 1; min-width: 0; }
+      .reader-category {
+        font-size: 0.58rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 0.5rem;
+      }
+      .reader-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(1.4rem, 3vw, 1.9rem);
+        font-weight: 500;
+        font-style: italic;
+        color: var(--text);
+        line-height: 1.2;
+        word-break: break-word;
+      }
+      .reader-close {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: #555;
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        font-size: 1.15rem;
+        line-height: 1;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.2s;
+        position: relative; z-index: 10;
+      }
+      .reader-close:hover { background: rgba(255,255,255,0.12); color: #ede8de; border-color: rgba(255,255,255,0.2); }
 
-        nav .nav-links {
-          gap: 0.5rem;
-        }
+      .reader-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 2rem 2.2rem 1.5rem;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: #2a2a2c transparent;
+      }
+      .reader-body::-webkit-scrollbar { width: 3px; }
+      .reader-body::-webkit-scrollbar-thumb { background: #2a2a2c; border-radius: 2px; }
 
-        .sidebar {
-          padding: 1rem 0;
-        }
+      .reader-poem {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(1.1rem, 2.5vw, 1.25rem);
+        font-weight: 400;
+        font-style: italic;
+        line-height: 1.75;
+        color: #e4ddd0;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        margin-bottom: 2.5rem;
+        letter-spacing: 0.005em;
+      }
 
-        .collapse {
-          background-color: #eaeaea;
-        }
+      .reader-divider {
+        width: 40px; height: 2px;
+        background: var(--accent);
+        opacity: 0.5;
+        margin: 0 0 1.8rem;
+      }
 
-        .navbar-toggler {
-          border: none;
+      .comments-label {
+        font-size: 0.6rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+        color: var(--text-mute); margin-bottom: 1rem;
+      }
+      .comment-item {
+        padding: 0.9rem 1.1rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 2px solid rgba(200,169,110,0.4);
+        border-radius: 8px;
+        margin-bottom: 0.7rem;
+        font-size: 0.86rem; color: var(--text-dim); line-height: 1.7;
+      }
+      .comment-item strong { color: var(--text); }
+      .comment-time { font-size: 0.66rem; color: var(--text-mute); margin-top: 0.3rem; }
+      .comment-empty { font-size: 0.82rem; color: var(--text-mute); font-style: italic; }
+
+      .comment-form { margin-top: 1.2rem; display: none; }
+      .comment-form input,
+      .comment-form textarea {
+        width: 100%;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        padding: 0.65rem 0.8rem;
+        color: var(--text); font-size: 0.88rem;
+        font-family: "Inter", sans-serif;
+        margin-bottom: 0.8rem;
+        resize: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .comment-form input::placeholder,
+      .comment-form textarea::placeholder { color: var(--text-mute); }
+      .comment-form input:focus,
+      .comment-form textarea:focus {
+        outline: none; border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(200,169,110,0.14);
+      }
+
+      .act-btn.copied { color: var(--accent); }
+      .copy-confirm {
+        font-size: 0.7rem; color: var(--accent); letter-spacing: 0.05em;
+        opacity: 0; transform: translateX(-4px);
+        transition: opacity 0.2s, transform 0.2s;
+        pointer-events: none; white-space: nowrap; align-self: center;
+      }
+      .copy-confirm.show { opacity: 1; transform: translateX(0); }
+
+      .reader-actions {
+        padding: 0.9rem 2rem;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        flex-wrap: wrap;
+        flex-shrink: 0;
+        background: var(--bg);
+      }
+      .act-btn {
+        background: none; border: none;
+        color: var(--text-dim); font-size: 0.62rem;
+        font-weight: 500;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        cursor: pointer;
+        display: flex; align-items: center; gap: 0.3rem;
+        padding: 0.45rem 0.6rem; border-radius: 6px;
+        transition: color 0.2s, background 0.2s;
+        font-family: "Inter", sans-serif;
+        white-space: nowrap;
+      }
+      .act-btn:hover { color: var(--accent); background: rgba(200,169,110,0.08); }
+      .act-btn.liked { color: #e5807a; }
+      .act-btn i { font-size: 0.85rem; }
+      .act-sep { width: 1px; height: 12px; background: var(--border); flex-shrink: 0; }
+      .act-post {
+        background: linear-gradient(145deg, var(--accent), var(--accent-d));
+        border: none;
+        color: #1a1408; border-radius: 7px;
+        padding: 0.45rem 1rem; font-size: 0.62rem; font-weight: 600;
+        letter-spacing: 0.1em; text-transform: uppercase;
+        cursor: pointer; font-family: "Inter", sans-serif;
+        transition: filter 0.2s;
+      }
+      .act-post:hover { filter: brightness(1.08); }
+
+      /* ───────────────────────────────
+         GENERIC MODALS
+      ─────────────────────────────── */
+      .modal-overlay {
+        display: none; position: fixed; inset: 0; z-index: 600;
+        background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);
+        align-items: center; justify-content: center; padding: 1.5rem;
+      }
+      .modal-overlay.open { display: flex; }
+      .modal-box {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px; padding: 2.2rem 2rem;
+        width: 100%; max-width: 420px;
+        position: relative;
+        animation: fadeUp 0.25s ease;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(14px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      .modal-box h2 {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.6rem; font-style: italic; font-weight: 500;
+        color: var(--text); margin-bottom: 1.2rem;
+      }
+      .modal-box p { color: var(--text-dim); font-size: 0.88rem; line-height: 1.8; }
+      .modal-box strong { color: var(--text); }
+      .modal-close-btn {
+        position: absolute; top: 1.1rem; right: 1.1rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        width: 32px; height: 32px; border-radius: 50%;
+        cursor: pointer; font-size: 1rem;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--text-dim); transition: all 0.2s; z-index: 10;
+      }
+      .modal-close-btn:hover { background: var(--surface-2); color: var(--text); border-color: var(--border-2); }
+      .modal-box hr { border: none; border-top: 1px solid var(--border); margin: 1.4rem 0; }
+      .modal-box input, .modal-box textarea {
+        width: 100%; background: var(--surface);
+        border: 1px solid var(--border); border-radius: 9px;
+        padding: 0.7rem 0.85rem; color: var(--text); font-size: 0.88rem;
+        font-family: "Inter", sans-serif;
+        margin-bottom: 1rem; resize: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .modal-box input::placeholder, .modal-box textarea::placeholder { color: var(--text-mute); }
+      .modal-box input:focus, .modal-box textarea:focus {
+        outline: none; border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(200,169,110,0.14);
+      }
+      .modal-box button[type="submit"] {
+        background: linear-gradient(145deg, var(--accent), var(--accent-d));
+        border: none;
+        color: #1a1408; padding: 0.65rem 1.5rem;
+        font-family: "Inter", sans-serif; font-size: 0.78rem; font-weight: 600;
+        letter-spacing: 0.04em;
+        cursor: pointer; transition: filter 0.2s; border-radius: 9px;
+      }
+      .modal-box button[type="submit"]:hover { filter: brightness(1.08); }
+
+      /* ───────────────────────────────
+         MOBILE OVERRIDES
+      ─────────────────────────────── */
+      @media (max-width: 640px) {
+        .topnav { padding: 0 1.2rem; }
+        .topnav-links { display: none; }
+        .topnav-hamburger { display: block; }
+
+        .masthead { padding: 2rem 1.2rem 1.5rem; }
+        .masthead::after { left: 1.2rem; }
+
+        .filter-bar { padding: 0.8rem 1.2rem; }
+
+        .gallery-wrap { padding: 1.4rem 1rem 2rem; }
+
+        .page-footer { padding: 1.8rem 1.2rem 2.2rem; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 1rem; }
+        .page-footer span { display: block; }
+        .page-footer a { display: inline-block; padding: 0.75rem 1.6rem; border: 1px solid var(--border); border-radius: 8px; letter-spacing: 0.14em; }
+        .page-footer a:hover { border-color: var(--border-2); }
+
+        /* Reader goes full screen on mobile */
+        .reader-panel {
+          width: 100vw;
+          border-left: none;
         }
+        .reader-header { padding: 1.3rem 1.2rem 1rem; }
+        .reader-body { padding: 1.4rem 1.2rem 1rem; }
+        .reader-actions { padding: 0.8rem 1.2rem; }
+
+        .modal-box { padding: 1.8rem 1.4rem; }
       }
     </style>
   </head>
   <body>
-    <nav>
-      <!-- Mobile Navbar -->
-      <div
-        class="navbar navbar-light d-md-none w-100 justify-content-between px-3 py-2"
-      >
-        <a href="home.shtml" class="logo navbar-brand">Think Room</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#mobileNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      </div>
 
-      <!-- Desktop Sidebar -->
-      <div
-        class="sidebar d-none d-md-flex flex-column align-items-center w-100 h-100"
-      >
-        <a href="home.shtml" class="logo">Think Room</a>
-        <ul class="nav-links">
-          <li><a href="home.shtml">Home</a></li>
-          <li><a href="#poems">Poems</a></li>
-          <li><a href="#" id="authorBtn">Author</a></li>
-          <li><a href="#" id="contactBtn">Contact</a></li>
-        </ul>
-      </div>
-
-      <!-- Mobile Collapsible Sidebar -->
-      <div class="collapse d-md-none w-100 text-center bg-light" id="mobileNav">
-        <ul class="nav-links flex-column py-2">
-          <li><a href="home.shtml">Home</a></li>
-          <li><a href="#poems">Poems</a></li>
-          <li><a href="#" id="authorBtnMobile">Author</a></li>
-          <li><a href="#" id="contactBtnMobile">Contact</a></li>
-        </ul>
-      </div>
+    <!-- Top nav -->
+    <nav class="topnav">
+      <a href="/" class="topnav-brand"><span class="brand-mark">T</span>Think Room</a>
+      <ul class="topnav-links">
+        <li class="topnav-dropdown">
+          <a href="#" id="topicsBtn">Topics <i class="bi bi-chevron-down" style="font-size:0.6rem;"></i></a>
+          <div class="topnav-dropdown-menu" id="topicsMenu"></div>
+        </li>
+        <li><a href="/author">Author</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+      <button class="topnav-hamburger" id="hamburger" aria-label="Menu">
+        <i class="bi bi-list"></i>
+      </button>
     </nav>
 
-    <div class="content">
-      <header>
-        <h1>Think Room</h1>
-        <p>
-          "If hell’s fury awaits my soul, then let it be— for God’s fate for me
-          must be to burn in its flames."
-        </p>
-      </header>
-
-      <div class="filter-buttons"></div>
-
-      <section id="poems" class="gallery"></section>
-
-      <div
-        class="footer text-center py-3"
-        style="background: #f8f9fa; font-size: 0.9rem"
-      >
-        <div>
-          © 2025 Freddy Carias. All Rights Reserved.
-        </div>
-        <div class="mt-1">
-          <a
-            href="login.php"
-            style="color: #666; font-size: 0.85rem; text-decoration: none"
-          >
-            Login
-          </a>
-        </div>
-      </div>
-
-      <!-- Poem Modal -->
-      <div id="poemModal" class="modal">
-        <div class="modal-content">
-          <span class="close" onclick="closeModal('poemModal')">&times;</span>
-          <h2 id="modalTitle"></h2>
-          <pre id="modalBody" style="white-space: pre-wrap"></pre>
-
-          <button
-            class="filter-button"
-            id="readMoreBtn"
-            style="margin: 10px 0; display: none"
-            onclick="expandPoem()"
-          >
-            Read More
-          </button>
-
-          <div
-            style="
-              margin-top: 20px;
-              display: flex;
-              justify-content: space-around;
-              align-items: center;
-              flex-wrap: wrap;
-              gap: 10px;
-            "
-          >
-            <button class="filter-button" onclick="likePoem()">
-              <i class="bi bi-heart"></i> <span id="likeCount">0</span> Like
-            </button>
-            <button class="filter-button" onclick="shareTwitter()">
-              <i class="bi bi-twitter"></i> Share
-            </button>
-            <button class="filter-button" onclick="shareFacebook()">
-              <i class="bi bi-facebook"></i> Share
-            </button>
-            <button class="filter-button" onclick="showShareLink()">
-              <i class="bi bi-link-45deg"></i> Get Link
-            </button>
-            <button class="filter-button" onclick="openCommentForm()">
-              <i class="bi bi-chat-dots"></i> Comment
-            </button>
-          </div>
-
-          <!-- Always show comment list -->
-          <h4
-            style="
-              margin-top: 20px;
-              font-size: 0.95rem;
-              font-weight: 500;
-              color: #666;
-              margin-bottom: 8px;
-            "
-          >
-            Comments
-          </h4>
-
-          <div id="commentsList" style="margin-top: 10px"></div>
-
-          <!-- Hidden input form that toggles with 'Comment' button -->
-          <div id="commentForm" style="margin-top: 20px; display: none">
-            <input
-              type="text"
-              id="commentName"
-              placeholder="Your name (optional)"
-              style="width: 100%; padding: 10px; margin-bottom: 10px"
-            />
-            <textarea
-              id="commentInput"
-              placeholder="Write your comment..."
-              style="width: 100%; padding: 10px; margin-bottom: 10px"
-            ></textarea>
-
-            <button class="filter-button" onclick="saveComment()">
-              Save Comment
-            </button>
-          </div>
-
-          <!-- Hidden link box (stays right below) -->
-          <div id="shareLinkBox" style="display: none; margin-top: 10px">
-            <input
-              type="text"
-              id="shareLinkInput"
-              readonly
-              style="width: 100%; padding: 8px; margin-bottom: 10px"
-            />
-            <button onclick="copyShareLink()" class="filter-button">
-              Copy Link
-            </button>
-            <span id="copyConfirm" style="display: none; color: green"
-              >✅ Copied!</span
-            >
-          </div>
-        </div>
-      </div>
-      <!-- end of .modal-content -->
+    <!-- Mobile dropdown -->
+    <div class="mobile-menu" id="mobileMenu">
+      <span class="mobile-topics-label">Topics</span>
+      <div id="mobileTopics"></div>
+      <a href="/author">Author</a>
+      <a href="/contact">Contact</a>
     </div>
-    <!-- end of #poemModal -->
 
-    <!-- Author Modal -->
-    <div id="authorModal" class="modal">
-      <div class="modal-content">
-        <span class="close" onclick="closeModal('authorModal')">&times;</span>
-        <h2>About the Author</h2>
-        <p>
-          Freddy Carias is the voice behind <strong>Think Room</strong> — a
-          quiet gallery of thoughts, poetry, and reflection.
-        </p>
-
-        <hr style="margin: 2rem 0; border: none; border-top: 1px solid #ccc" />
-
-        <div
-          style="
-            font-size: 0.95rem;
-            color: #444;
-            line-height: 1.6;
-            text-align: center;
-          "
-        >
-          <p style="margin-bottom: 0.5rem">
-            <strong>Support</strong>
-            <i
-              class="bi bi-heart-fill"
-              style="margin-left: 6px; color: #e63946"
-            ></i>
-          </p>
-          <p>
-            Zelle: <strong style="color: #222">fcarias38@outlook.com</strong>
-          </p>
-        </div>
-      </div>
+    <!-- Masthead -->
+    <div class="masthead">
+      <p class="masthead-eyebrow">A poetry collection</p>
+      <h1>Think Room</h1>
+      <p class="masthead-sub">by Freddy Carias</p>
     </div>
-    <div id="contactModal" class="modal">
-      <div class="modal-content">
-        <span class="close" onclick="closeModal('contactModal')">&times;</span>
-        <h2>Contact Think Room</h2>
-        <form method="POST" action="send_contact.php">
-          <input
-            type="text"
-            name="name"
-            placeholder="Your Name"
-            required
-            style="width: 100%; margin: 10px 0; padding: 10px"
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Your Email"
-            required
-            style="width: 100%; margin: 10px 0; padding: 10px"
-          />
-          <textarea
-            name="message"
-            rows="5"
-            placeholder="Your Message"
-            required
-            style="width: 100%; margin: 10px 0; padding: 10px"
-          ></textarea>
-          <button
-            type="submit"
-            style="
-              padding: 10px 20px;
-              background: #222;
-              color: #fff;
-              border: none;
-              border-radius: 5px;
-            "
-          >
-            Send Message
+
+    <!-- Filter bar -->
+    <div class="filter-bar" id="filterBar"></div>
+
+    <!-- Gallery -->
+    <div class="gallery-wrap">
+      <div class="masonry" id="poems"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="page-footer">
+      <span>&copy; 2025 Freddy Carias &mdash; All Rights Reserved</span>
+      <a href="login.php">Login</a>
+    </footer>
+
+    <!-- Poem reader -->
+    <div class="reader-overlay" id="readerOverlay">
+      <div class="reader-backdrop" id="readerBackdrop"></div>
+      <div class="reader-panel">
+        <div class="reader-header">
+          <div class="reader-meta">
+            <p class="reader-category" id="readerCategory"></p>
+            <h2 class="reader-title" id="readerTitle"></h2>
+          </div>
+          <button class="reader-close" id="readerCloseBtn" type="button" aria-label="Close">&times;</button>
+        </div>
+        <div class="reader-body">
+          <pre class="reader-poem" id="readerBody"></pre>
+          <div class="reader-divider"></div>
+          <p class="comments-label">Comments</p>
+          <div id="commentsList"></div>
+          <div class="comment-form" id="commentForm">
+            <input type="text" id="commentName" placeholder="Your name (optional)" />
+            <textarea id="commentInput" rows="3" placeholder="Leave a thought..."></textarea>
+            <button class="act-post" onclick="saveComment()">Post</button>
+          </div>
+        </div>
+        <div class="reader-actions">
+          <button class="act-btn" id="likeBtn" onclick="likePoem()">
+            <i class="bi bi-heart"></i>&nbsp;<span id="likeCount">0</span>
           </button>
-        </form>
+          <div class="act-sep"></div>
+          <button class="act-btn" onclick="openCommentForm()"><i class="bi bi-chat-dots"></i>&nbsp;Comment</button>
+          <div class="act-sep"></div>
+          <button class="act-btn" id="nativeShareBtn" onclick="nativeShare()" style="display:none;"><i class="bi bi-box-arrow-up"></i>&nbsp;Share</button>
+          <button class="act-btn" id="copyLinkBtn" onclick="copyShareLink()"><i class="bi bi-link-45deg"></i>&nbsp;Copy</button>
+          <button class="act-btn" onclick="shareFacebook()"><i class="bi bi-facebook"></i></button>
+          <span id="copyConfirm" class="copy-confirm">Copied</span>
+        </div>
       </div>
     </div>
 
     <script>
-      let fullPoemText = "";
+      // ── Mobile menu ──
+      document.getElementById("hamburger").addEventListener("click", () => {
+        document.getElementById("mobileMenu").classList.toggle("open");
+      });
 
+      // ── Modals ──
+      function openModal(id) {
+        document.getElementById(id).classList.add("open");
+        document.getElementById("mobileMenu").classList.remove("open");
+      }
+      function closeModal(id) {
+        document.getElementById(id).classList.remove("open");
+      }
+
+      // ── Reader ──
       function openPoem(card) {
-        // RESET FIRST
-        resetPoemModalState();
-        const title = card.querySelector("h2").innerText;
+        resetReader();
+        const title    = card.querySelector(".card-title").innerText;
+        const cat      = card.querySelector(".card-category").innerText;
         const fullText = card.getAttribute("data-full");
-
-        document.getElementById("modalTitle").innerText = title;
-        document.getElementById("modalBody").innerText = fullText;
-        document.getElementById("readMoreBtn").style.display = "none";
-        document.getElementById("poemModal").style.display = "block";
-
-        // Load likes and comments *after* resetting
+        document.getElementById("readerCategory").innerText = cat;
+        document.getElementById("readerTitle").innerText    = title;
+        document.getElementById("readerBody").innerText     = fullText;
+        document.getElementById("readerOverlay").classList.add("open");
+        document.body.style.overflow = "hidden";
         loadLikesAndComments(title);
-
         window.location.hash = "poem=" + encodeURIComponent(title);
+        // Native view tracking (fire-and-forget)
+        fetch("track_view.php", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: title })
+        }).catch(() => {});
       }
 
-      function resetPoemModalState() {
-        document.getElementById("commentForm").style.display = "none";
-        document.getElementById("commentInput").value = "";
-        document.getElementById("commentsList").innerHTML = "";
-
-        document.getElementById("shareLinkBox").style.display = "none";
-        document.getElementById("shareLinkInput").value = "";
-        document.getElementById("copyConfirm").style.display = "none";
+      function closeReader() {
+        document.getElementById("readerOverlay").classList.remove("open");
+        document.body.style.overflow = "";
+        history.replaceState(null, "", window.location.pathname);
+        resetReader();
       }
 
-      function closeModal(modalId) {
-        document.getElementById(modalId).style.display = "none";
-
-        if (modalId === "poemModal") {
-          history.replaceState(null, "", window.location.pathname); // <- YES, keep this
-          resetPoemModalState(); // <- also needed to clear open states
-        }
+      function resetReader() {
+        document.getElementById("commentForm").style.display    = "none";
+        document.getElementById("commentInput").value           = "";
+        document.getElementById("commentName").value            = "";
+        document.getElementById("commentsList").innerHTML        = "";
+        document.getElementById("copyConfirm").classList.remove("show");
+        document.getElementById("copyLinkBtn").classList.remove("copied");
+        document.getElementById("likeBtn").classList.remove("liked");
+        document.getElementById("likeCount").innerText          = "0";
       }
 
-      function filterPoems(category, btn) {
-        const cards = document.querySelectorAll(".poem-card");
-        document
-          .querySelectorAll(".filter-buttons button")
-          .forEach((b) => b.classList.remove("active"));
+      // ── Filter ──
+      function filterPoems(cat, btn) {
+        document.querySelectorAll(".poem-card").forEach(c => {
+          c.style.display = (cat === "all" || c.dataset.category === cat) ? "" : "none";
+        });
+        document.querySelectorAll(".filter-bar button").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
-        cards.forEach((card) => {
-          if (category === "all" || card.dataset.category === category) {
-            card.style.display = "block";
-          } else {
-            card.style.display = "none";
-          }
-        });
       }
 
-      document.getElementById("authorBtn").onclick = function () {
-        document.getElementById("authorModal").style.display = "block";
-      };
-      document.getElementById("contactBtn").onclick = function () {
-        document.getElementById("contactModal").style.display = "block";
-      };
-
-      window.onclick = function (event) {
-        const modals = ["poemModal", "authorModal", "contactModal"];
-        modals.forEach((id) => {
-          const modal = document.getElementById(id);
-          if (event.target === modal) {
-            modal.style.display = "none";
-            if (id === "poemModal") {
-              history.replaceState(null, "", window.location.pathname);
-            }
-          }
-        });
-      };
-
+      // ── Likes ──
       function likePoem() {
-        const title = document.getElementById("modalTitle").innerText;
-
+        const title = document.getElementById("readerTitle").innerText;
         fetch("update_likes.php", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title: title }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            document.getElementById("likeCount").innerText = data.likes;
-          });
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title })
+        }).then(r => r.json()).then(data => {
+          document.getElementById("likeCount").innerText = data.likes;
+          document.getElementById("likeBtn").classList.add("liked");
+        });
       }
 
+      // ── Comments ──
+      function openCommentForm() {
+        const f = document.getElementById("commentForm");
+        f.style.display = f.style.display === "block" ? "none" : "block";
+      }
       function saveComment() {
-        const title = document.getElementById("modalTitle").innerText;
-        const name = document.getElementById("commentName").value.trim();
+        const title   = document.getElementById("readerTitle").innerText;
+        const name    = document.getElementById("commentName").value.trim();
         const comment = document.getElementById("commentInput").value.trim();
-
-        if (comment !== "") {
-          fetch("save_comment.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              title: title,
-              comment: comment,
-              name: name,
-            }),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              document.getElementById("commentInput").value = "";
-              displayComments(data.comments);
-              document.getElementById("commentForm").style.display = "none";
-            });
-        }
+        if (!comment) return;
+        fetch("save_comment.php", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, comment, name })
+        }).then(r => r.json()).then(data => {
+          document.getElementById("commentInput").value = "";
+          document.getElementById("commentName").value = "";
+          // New comments are pending moderation — re-render only approved ones
+          // and show a brief notice.
+          if (data.comments) displayComments(data.comments);
+          document.getElementById("commentForm").style.display = "none";
+          const list = document.getElementById("commentsList");
+          const note = document.createElement("p");
+          note.className = "comment-empty";
+          note.style.color = "#c8a96e";
+          note.textContent = "Thank you — your comment is awaiting approval.";
+          list.prepend(note);
+          setTimeout(() => note.remove(), 5000);
+        });
       }
-
       function loadLikesAndComments(title) {
         fetch("get_likes_comments.php?title=" + encodeURIComponent(title))
-          .then((response) => response.json())
-          .then((data) => {
+          .then(r => r.json()).then(data => {
             document.getElementById("likeCount").innerText = data.likes;
             displayComments(data.comments);
           });
       }
       function displayComments(comments) {
-        const commentsList = document.getElementById("commentsList");
-        commentsList.innerHTML = "";
+        const list = document.getElementById("commentsList");
+        list.innerHTML = "";
+        if (!comments.length) {
+          list.innerHTML = '<p class="comment-empty">No comments yet — be the first.</p>';
+          return;
+        }
+        comments.forEach(c => {
+          const el = document.createElement("div");
+          el.className = "comment-item";
+          const name = c.name ? `<strong>${c.name}</strong>: ` : "";
+          el.innerHTML = `${name}${c.comment}<div class="comment-time">${timeAgo(c.created_at)}</div>`;
+          list.appendChild(el);
+        });
+      }
 
-        if (comments.length === 0) {
-          const empty = document.createElement("p");
-          empty.innerText = "No comments yet. Be the first!";
-          empty.style.fontStyle = "italic";
-          empty.style.color = "#777";
-          commentsList.appendChild(empty);
+      // ── Share ──
+      function trackReaderShare() {
+        const title = document.getElementById("readerTitle").innerText;
+        if (!title) return;
+        fetch("track_share.php", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: title })
+        }).catch(() => {});
+      }
+      function shareUrl() {
+        const title = document.getElementById("readerTitle").innerText;
+        return window.location.href.split("#")[0] + "#poem=" + encodeURIComponent(title);
+      }
+      // Show the native share button only where the Web Share API exists (mostly mobile).
+      if (navigator.share) {
+        document.getElementById("nativeShareBtn").style.display = "inline-flex";
+      }
+      function nativeShare() {
+        trackReaderShare();
+        const title = document.getElementById("readerTitle").innerText;
+        navigator.share({
+          title: title,
+          text: `"${title}" — Think Room by Freddy Carias`,
+          url: shareUrl()
+        }).catch(() => {});
+      }
+      function shareFacebook() {
+        trackReaderShare();
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl())}`, "_blank");
+      }
+      function copyShareLink() {
+        trackReaderShare();
+        const url  = shareUrl();
+        const done = () => {
+          const btn = document.getElementById("copyLinkBtn");
+          const el  = document.getElementById("copyConfirm");
+          btn.classList.add("copied");
+          el.classList.add("show");
+          setTimeout(() => { btn.classList.remove("copied"); el.classList.remove("show"); }, 2000);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(done).catch(fallbackCopy);
         } else {
-          comments.forEach((comment) => {
-            const p = document.createElement("p");
-            const namePrefix = comment.name
-              ? `<strong>${comment.name}:</strong> `
-              : "";
-            const time = timeAgo(comment.created_at);
-            p.innerHTML = `${namePrefix}${comment.comment}<br><span style="font-size: 0.8em; color: #999;">${time}</span>`;
-            p.style.padding = "8px";
-            p.style.border = "1px solid #ddd";
-            p.style.borderRadius = "4px";
-            p.style.marginBottom = "10px";
-            p.style.backgroundColor = "#f9f9f9";
-            commentsList.appendChild(p);
+          fallbackCopy();
+        }
+        function fallbackCopy() {
+          const ta = document.createElement("textarea");
+          ta.value = url;
+          ta.style.position = "fixed";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand("copy"); } catch (e) {}
+          document.body.removeChild(ta);
+          done();
+        }
+      }
+
+      // ── Load poems ──
+      function loadPoems() {
+        fetch("get_poems.php").then(r => r.json()).then(data => {
+          const masonry   = document.getElementById("poems");
+          const filterBar = document.getElementById("filterBar");
+          masonry.innerHTML = "";
+          filterBar.innerHTML = "";
+          const cats = new Set();
+
+          data.forEach((poem, i) => {
+            if (poem.archived == 1) return; // hide retired poems from the public gallery
+            cats.add(poem.category);
+            const card = document.createElement("a");
+            card.className = "poem-card";
+            card.dataset.category = poem.category;
+            // Use slug if available, fallback to id
+            card.href = poem.slug ? `/poems/${poem.slug}` : `/poem?id=${poem.id}`;
+            const len = 150; // uniform snippet length for even-looking cards
+            card.innerHTML = `
+              <div class="card-inner">
+                <div class="card-category">${poem.category || "verse"}</div>
+                <h2 class="card-title">${poem.title}</h2>
+                <p class="card-snippet">${poem.body.substring(0, len)}&hellip;</p>
+                <div class="card-footer">
+                  <span class="card-read">Read <i class="bi bi-arrow-right"></i></span>
+                </div>
+              </div>`;
+            masonry.appendChild(card);
+          });
+
+          // Build filter buttons
+          const allBtn = document.createElement("button");
+          allBtn.textContent = "All"; allBtn.className = "active";
+          allBtn.onclick = function() { filterPoems("all", this); };
+          filterBar.appendChild(allBtn);
+
+          cats.forEach(cat => {
+            const sep = document.createElement("div"); sep.className = "filter-sep";
+            filterBar.appendChild(sep);
+            const btn = document.createElement("button");
+            btn.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+            btn.onclick = function() { filterPoems(cat, this); };
+            filterBar.appendChild(btn);
+          });
+
+          // Populate the Topics menu (desktop dropdown + mobile list)
+          buildTopicsMenus(cats);
+        });
+      }
+
+      // Match a filter-bar button to a category label and click it.
+      function filterByTopic(cat) {
+        const target = cat === "all" ? "all" : cat;
+        const buttons = document.querySelectorAll(".filter-bar button");
+        for (const b of buttons) {
+          const label = b.textContent.trim().toLowerCase();
+          if ((target === "all" && label === "all") || label === cat.toLowerCase()) {
+            b.click(); break;
+          }
+        }
+        // Close menus and scroll to the gallery
+        document.getElementById("topicsMenu")?.classList.remove("open");
+        document.getElementById("mobileMenu")?.classList.remove("open");
+        document.querySelector(".filter-bar")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function buildTopicsMenus(cats) {
+        const desktop = document.getElementById("topicsMenu");
+        const mobile  = document.getElementById("mobileTopics");
+        if (desktop) {
+          desktop.innerHTML = "";
+          const all = document.createElement("a");
+          all.textContent = "All poems";
+          all.onclick = (e) => { e.preventDefault(); filterByTopic("all"); };
+          desktop.appendChild(all);
+          cats.forEach(cat => {
+            const a = document.createElement("a");
+            a.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+            a.onclick = (e) => { e.preventDefault(); filterByTopic(cat); };
+            desktop.appendChild(a);
+          });
+        }
+        if (mobile) {
+          mobile.innerHTML = "";
+          const allM = document.createElement("a");
+          allM.textContent = "All";
+          allM.onclick = (e) => { e.preventDefault(); filterByTopic("all"); };
+          mobile.appendChild(allM);
+          cats.forEach(cat => {
+            const a = document.createElement("a");
+            a.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+            a.onclick = (e) => { e.preventDefault(); filterByTopic(cat); };
+            mobile.appendChild(a);
           });
         }
       }
 
-      function shareTwitter() {
-        const title = document.getElementById("modalTitle").innerText;
-        const pageUrl = encodeURIComponent(window.location.href);
-
-        const text = encodeURIComponent(
-          `Check out the poem "${title}" at Think Room!`
-        );
-
-        const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${pageUrl}`;
-        window.open(twitterUrl, "_blank");
+      // ── Deep link ──
+      function checkHash() {
+        const hash = window.location.hash;
+        if (!hash.startsWith("#poem=")) return;
+        const title = decodeURIComponent(hash.split("=")[1]);
+        const iv = setInterval(() => {
+          for (const card of document.querySelectorAll(".poem-card")) {
+            if (card.querySelector(".card-title").innerText.trim() === title.trim()) {
+              clearInterval(iv); openPoem(card); break;
+            }
+          }
+        }, 200);
+        setTimeout(() => clearInterval(iv), 5000);
       }
 
-      function shareFacebook() {
-        const pageUrl = encodeURIComponent(window.location.href);
-        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${pageUrl}`;
-
-        window.open(facebookUrl, "_blank");
+      // ── Time ago ──
+      function timeAgo(s) {
+        const d = Math.floor((new Date() - new Date(s)) / 1000);
+        if (d < 60) return `${d}s ago`;
+        if (d < 3600) return `${Math.floor(d/60)}m ago`;
+        if (d < 86400) return `${Math.floor(d/3600)}h ago`;
+        if (d < 604800) return `${Math.floor(d/86400)}d ago`;
+        return new Date(s).toLocaleDateString();
       }
 
-      function loadPoems() {
-        fetch("get_poems.php")
-          .then((response) => response.json())
-          .then((data) => {
-            const gallery = document.getElementById("poems");
-            const filterContainer = document.querySelector(".filter-buttons");
-            gallery.innerHTML = "";
-            filterContainer.innerHTML = ""; // Clear old filter buttons
-
-            const categories = new Set(); // <-- collect categories here
-
-            data.forEach((poem) => {
-              categories.add(poem.category); // <-- build up set of unique categories
-
-              const card = document.createElement("div");
-              card.className = "poem-card";
-              card.setAttribute("data-category", poem.category);
-              card.setAttribute("data-full", poem.body);
-              card.onclick = function () {
-                openPoem(this);
-              };
-
-              card.innerHTML = `
-          <div style="display: flex; flex-direction: column; height: 100%;">
-            <h2>${poem.title}</h2>
-            <p class="snippet">${poem.body.substring(0, 100)}...</p>
-            <button class="filter-button read-more-button">Read More</button>
-          </div>
-        `;
-
-              gallery.appendChild(card);
-            });
-
-            // After building all cards, now build the filter buttons:
-            const allButton = document.createElement("button");
-            allButton.className = "active";
-            allButton.innerText = "All";
-            allButton.onclick = function () {
-              filterPoems("all", this);
-            };
-            filterContainer.appendChild(allButton);
-
-            categories.forEach((category) => {
-              const button = document.createElement("button");
-              button.innerText =
-                category.charAt(0).toUpperCase() + category.slice(1);
-              button.onclick = function () {
-                filterPoems(category, this);
-              };
-              filterContainer.appendChild(button);
-            });
-          });
-      }
+      // ── Init ──
       document.addEventListener("DOMContentLoaded", () => {
         loadPoems();
-        checkHashForPoem();
+        checkHash();
 
-        document.getElementById("authorBtnMobile").onclick = function () {
-          document.getElementById("authorModal").style.display = "block";
-        };
+        // Topics dropdown toggle (desktop)
+        document.getElementById("topicsBtn").addEventListener("click", e => {
+          e.preventDefault(); e.stopPropagation();
+          document.getElementById("topicsMenu").classList.toggle("open");
+        });
+        // Close the dropdown when clicking elsewhere
+        document.addEventListener("click", e => {
+          const dd = document.getElementById("topicsMenu");
+          const btn = document.getElementById("topicsBtn");
+          if (dd && !dd.contains(e.target) && !btn.contains(e.target)) dd.classList.remove("open");
+        });
 
-        document.getElementById("contactBtnMobile").onclick = function () {
-          document.getElementById("contactModal").style.display = "block";
-        };
+        // Reader close
+        document.getElementById("readerCloseBtn").addEventListener("click", e => { e.stopPropagation(); closeReader(); });
+        document.getElementById("readerBackdrop").addEventListener("click", () => closeReader());
+        document.getElementById("authorModal").addEventListener("click",  e => { if (e.target === document.getElementById("authorModal"))  closeModal("authorModal"); });
+        document.getElementById("contactModal").addEventListener("click", e => { if (e.target === document.getElementById("contactModal")) closeModal("contactModal"); });
+
+        // Escape key
+        document.addEventListener("keydown", e => {
+          if (e.key === "Escape") { closeReader(); closeModal("authorModal"); closeModal("contactModal"); }
+        });
       });
-
-      function copyShareLink() {
-        const input = document.getElementById("shareLinkInput");
-        input.select();
-        document.execCommand("copy");
-
-        const confirm = document.getElementById("copyConfirm");
-        confirm.style.display = "inline";
-
-        // Delay hiding both the confirmation and share box
-        setTimeout(() => {
-          confirm.style.display = "none";
-          document.getElementById("shareLinkBox").style.display = "none";
-        }, 2000);
-      }
-
-      function openCommentForm() {
-        const form = document.getElementById("commentForm");
-        form.style.display = form.style.display === "block" ? "none" : "block";
-      }
-
-      function showShareLink() {
-        const shareBox = document.getElementById("shareLinkBox");
-        const isVisible = shareBox.style.display === "block";
-        shareBox.style.display = isVisible ? "none" : "block";
-
-        if (!isVisible) {
-          const input = document.getElementById("shareLinkInput");
-          const title = document.getElementById("modalTitle").innerText;
-          const url =
-            window.location.href.split("#")[0] +
-            "#poem=" +
-            encodeURIComponent(title);
-          input.value = url;
-        }
-      }
-
-      // Auto-open poem from URL hash
-      function checkHashForPoem() {
-        const hash = window.location.hash;
-        if (hash.startsWith("#poem=")) {
-          const title = decodeURIComponent(hash.split("=")[1]);
-
-          // Wait for poems to load, then try to find the card
-          const interval = setInterval(() => {
-            const cards = document.querySelectorAll(".poem-card");
-            for (const card of cards) {
-              if (card.querySelector("h2").innerText.trim() === title.trim()) {
-                clearInterval(interval);
-                openPoem(card);
-                break;
-              }
-            }
-          }, 200);
-
-          // Optional: Stop trying after 5 seconds
-          setTimeout(() => clearInterval(interval), 5000);
-        }
-      }
-
-      function timeAgo(utcDateStr) {
-        const date = new Date(utcDateStr); // this assumes UTC
-        const now = new Date();
-        const diff = Math.floor((now - date) / 1000); // seconds
-
-        if (diff < 0) return "just now";
-        if (diff < 60) return `${diff} second${diff !== 1 ? "s" : ""} ago`;
-        if (diff < 3600)
-          return `${Math.floor(diff / 60)} minute${
-            Math.floor(diff / 60) !== 1 ? "s" : ""
-          } ago`;
-        if (diff < 86400)
-          return `${Math.floor(diff / 3600)} hour${
-            Math.floor(diff / 3600) !== 1 ? "s" : ""
-          } ago`;
-        if (diff < 604800)
-          return `${Math.floor(diff / 86400)} day${
-            Math.floor(diff / 86400) !== 1 ? "s" : ""
-          } ago`;
-
-        return date.toLocaleDateString(); // fallback
-      }
     </script>
-    <!-- Bootstrap JS Bundle with Popper.js (Required for the accordion) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

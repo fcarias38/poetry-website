@@ -1,0 +1,81 @@
+RewriteEngine On
+
+# ── Force HTTPS and non-www ──
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} ^www\.freddycarias\.com [NC]
+RewriteRule ^ https://freddycarias.com%{REQUEST_URI} [L,R=301]
+
+# ── Maintenance gate ──
+# When maintenance.flag exists, serve the maintenance page to EVERYONE except:
+#   - admins (identified by the tr_admin cookie set at login)
+#   - essential auth/admin routes and the maintenance page itself
+#   - static assets (so the maintenance page can still load its styling)
+# This runs at the server level so it also catches .shtml pages (home/gallery),
+# which cannot run the PHP maintenance_check.php include.
+# The homepage/gallery runs through gallery.php (see routes below), which
+# includes maintenance_check.php — so the root is gated in PHP directly.
+# This block catches all OTHER non-PHP/.shtml routes so they are gated too.
+RewriteCond %{DOCUMENT_ROOT}/maintenance.flag -f
+RewriteCond %{HTTP_COOKIE} !(^|;\s*)tr_admin=1 [NC]
+RewriteCond %{REQUEST_URI} !^/maintenance(\.php)?$ [NC]
+RewriteCond %{REQUEST_URI} !^/(login|admin_login|dashboard|logout|toggle_maintenance|forgot_password|reset_password|reset_request)(\.php)?/?$ [NC]
+RewriteCond %{REQUEST_URI} !\.(css|js|png|jpe?g|gif|svg|webp|ico|woff2?|ttf|map)$ [NC]
+RewriteRule ^ /maintenance.php [L]
+
+# ── Server Side Includes ──
+AddType text/html .shtml
+AddHandler server-parsed .shtml
+Options +Includes
+
+# ── Block sensitive files ──
+<FilesMatch "^(config|admin_config|admin_config\.example|config\.example|admin_auth|maintenance_check)\.php$">
+    Require all denied
+</FilesMatch>
+
+# ── Never serve the cached password hash ──
+<FilesMatch "^admin_pass\.hash$">
+    Require all denied
+</FilesMatch>
+
+# ── Allow maintenance.flag to be checked server-side but never served directly ──
+<FilesMatch "^maintenance\.flag$">
+    Require all denied
+</FilesMatch>
+
+# ── Block the password-reset token store entirely ──
+RewriteRule ^reset_tokens/ - [F,L]
+
+# ── Clean URLs: hide .php extension ──
+# Redirect direct .php requests to clean URLs (except config files)
+RewriteCond %{THE_REQUEST} \s/([^.]+)\.php[?\s] [NC]
+RewriteCond %1 !^(config|admin_config|admin_login|maintenance_check|save_work|save_comment|update_likes|get_poems|get_poem_by_id|get_poem_public|get_likes_comments|delete_poem|edit_poem|all_poems|send_contact|logout|toggle_maintenance|track_share|track_view|get_analytics|get_pending_comments|moderate_comment|reset_request|reset_password|forgot_password)$ [NC]
+RewriteRule ^([^.]+)\.php$ /$1 [R=301,L]
+
+# ── Redirect .shtml to clean URLs ──
+RewriteCond %{THE_REQUEST} \s/([^.]+)\.shtml[?\s] [NC]
+RewriteRule ^([^.]+)\.shtml$ /$1 [R=301,L]
+
+# ── Homepage: the gallery is served at the root via gallery.php ──
+# gallery.php runs the PHP maintenance check, then outputs the gallery.
+DirectoryIndex gallery.php
+RewriteRule ^$ gallery.php [L]
+
+# ── Named routes ──
+RewriteRule ^home$    /gallery [R=301,L]
+RewriteRule ^gallery$ gallery.php [L]
+
+# ── Maintenance page ──
+RewriteRule ^maintenance$ maintenance.php [L]
+
+# ── Poem slug URLs: /poems/slug → poem.php?slug=slug ──
+RewriteRule ^poems/([a-z0-9\-]+)/?$ poem.php?slug=$1 [L,QSA]
+
+# ── Extensionless PHP pages (login, dashboard, logout) ──
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(login|dashboard|logout|admin_login|toggle_maintenance|forgot_password|reset_password|author|contact)$ $1.php [L]
+
+# ── Extensionless .shtml fallback ──
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([^/]+)$ $1.shtml [L]
