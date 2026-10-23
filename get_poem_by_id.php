@@ -13,7 +13,7 @@ if (!isset($_GET['id'])) {
 }
 
 $id = intval($_GET['id']);
-$stmt = $conn->prepare("SELECT title, category, body FROM poems WHERE id = ?");
+$stmt = $conn->prepare("SELECT title, category, body, meta_description, meta_keywords, archived FROM poems WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();

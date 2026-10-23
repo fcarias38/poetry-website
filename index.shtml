@@ -39,18 +39,6 @@
       content="https://freddycarias.com/images/jessica-christian-wuqYCTAYPH4-unsplash.jpg"
     />
 
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-
-    <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-S4HPZV3TH7"
-    ></script>
-
     <!-- JSON-LD Schema -->
     <script type="application/ld+json">
       {
@@ -76,124 +64,149 @@
       }
     </script>
 
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-
-      gtag("config", "G-S4HPZV3TH7");
-    </script>
     <style>
+      * { box-sizing: border-box; }
+
       body {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
+        min-height: 100vh;
         background: #0d0d0d
           url("images/jessica-christian-wuqYCTAYPH4-unsplash.jpg") no-repeat
-          center center/cover;
+          center center / cover;
         font-family: "Merriweather", serif;
         text-align: center;
         color: #f8f1e7;
         margin: 0;
+        padding: 0;
         position: relative;
         overflow: hidden;
         animation: zoomBackground 30s ease-in-out infinite alternate;
       }
+
       @keyframes zoomBackground {
-        from {
-          background-size: 100%;
-        }
-        to {
-          background-size: 110%;
-        }
+        from { background-size: 100%; }
+        to   { background-size: 110%; }
       }
+
       .overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6);
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.62);
         z-index: 0;
       }
+
       .content {
-        max-width: 700px;
-        padding: 40px;
+        max-width: 680px;
+        width: 90%;
+        padding: 2.5rem 1.5rem 4rem;
         position: relative;
         z-index: 1;
         animation: fadeInContent 2s ease-in;
       }
+
       h1 {
-        font-size: 2.8rem;
-        margin-bottom: 1rem;
+        font-size: clamp(2rem, 7vw, 3.2rem);
+        margin-bottom: 1.2rem;
         font-weight: normal;
+        letter-spacing: 0.04em;
         animation: fadeInTitle 2s ease-in forwards;
         opacity: 0;
       }
-      p {
-        font-size: 1.3rem;
-        margin-bottom: 2rem;
+
+      .quote {
+        font-size: clamp(0.9rem, 2.8vw, 1.15rem);
+        margin-bottom: 0.4rem;
         font-style: italic;
+        line-height: 1.8;
+        color: #e8dfd4;
         animation: fadeInQuote 3s ease-in forwards;
         opacity: 0;
         animation-delay: 1s;
       }
-      .btn-outline-light {
-        font-size: 1rem;
-        padding: 0.6rem 2.5rem;
-        border-radius: 30px;
-        animation: fadeInButton 4s ease-in forwards;
+
+      .quote-attr {
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #999;
+        margin-bottom: 2.5rem;
+        animation: fadeInQuote 3s ease-in forwards;
         opacity: 0;
-        animation-delay: 2s;
+        animation-delay: 1.4s;
       }
+
+      .btn-enter {
+        font-size: 0.95rem;
+        padding: 0.7rem 3rem;
+        border-radius: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        color: #fff;
+        background: transparent;
+        text-decoration: none;
+        display: inline-block;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        opacity: 0;
+        animation: fadeInButton 1s ease-in 2s forwards, pulse 2.5s ease-in-out 3.5s infinite;
+        transition: background 0.3s, border-color 0.3s;
+      }
+
+      .btn-enter:hover,
+      .btn-enter:focus {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: #fff;
+        color: #fff;
+        outline: none;
+      }
+
+      .countdown {
+        font-size: 0.7rem;
+        color: #777;
+        margin-top: 1.4rem;
+        letter-spacing: 0.06em;
+        opacity: 0;
+        animation: fadeInQuote 1s ease-in 3s forwards;
+      }
+
       footer {
-        position: absolute;
-        bottom: 10px;
+        position: fixed;
+        bottom: 0;
         width: 100%;
         text-align: center;
-        font-size: 0.8rem;
-        color: #aaa;
+        font-size: 0.72rem;
+        color: rgba(255, 255, 255, 0.25);
+        padding: 0.8rem;
+        z-index: 1;
+        background: transparent;
       }
+
       @keyframes fadeInContent {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
+        from { opacity: 0; }
+        to   { opacity: 1; }
       }
       @keyframes fadeInTitle {
-        from {
-          opacity: 0;
-          transform: translateY(-20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
       }
       @keyframes fadeInQuote {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
       }
       @keyframes fadeInButton {
-        from {
-          opacity: 0;
-          transform: scale(0.9);
-        }
-        to {
-          opacity: 1;
-          transform: scale(1);
-        }
+        from { opacity: 0; transform: scale(0.92); }
+        to   { opacity: 1; transform: scale(1); }
+      }
+      @keyframes pulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.18); }
+        50%       { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+      }
+
+      @media (max-width: 480px) {
+        .content { padding: 2rem 1.2rem 4rem; }
+        .quote-attr { margin-bottom: 2rem; }
+        .btn-enter { padding: 0.65rem 2.2rem; font-size: 0.9rem; }
       }
     </style>
   </head>
@@ -202,20 +215,37 @@
 
     <div class="content">
       <h1>Think Room</h1>
-      <p>
-        "If hell’s fury awaits my soul, then let it be— for God’s fate for me
-        must be to burn in its flames"
+      <p class="quote">
+        "If hell's fury awaits my soul, then let it be— for God's fate for me
+        must be to burn in its flames."
       </p>
-      <a href="/home.shtml" class="btn btn-outline-light">Enter</a>
+      <p class="quote-attr">— Freddy Carias</p>
+      <a href="/gallery" class="btn-enter" id="enterBtn">Enter</a>
+      <p class="countdown">Entering in <span id="countNum">15</span>&thinsp;…</p>
     </div>
 
-    <footer
-      class="text-center py-3"
-      style="background: #111; color: #fff; font-size: 0.9rem"
-    >
-      <div>&copy; 2025 Freddy Carias. All Rights Reserved.</div>
-
+    <footer>
+      &copy; 2025 Freddy Carias. All Rights Reserved.
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      let seconds = 15;
+      const countEl = document.getElementById("countNum");
+      const countdownEl = document.querySelector(".countdown");
+      let timer = setInterval(() => {
+        seconds--;
+        if (countEl) countEl.textContent = seconds;
+        if (seconds <= 0) {
+          clearInterval(timer);
+          window.location.href = "/gallery";
+        }
+      }, 1000);
+
+      // Clicking Enter navigates immediately and cancels the timer
+      document.getElementById("enterBtn").addEventListener("click", () => {
+        clearInterval(timer);
+        if (countdownEl) countdownEl.style.display = "none";
+      });
+    </script>
   </body>
 </html>
