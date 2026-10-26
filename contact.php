@@ -1,5 +1,11 @@
 <?php
 include 'maintenance_check.php';
+require_once 'csrf.php';
+header('Cache-Control: private, no-store');
+$contactToken = csrf_token();
+if (empty($_SESSION['contact_started_at'])) {
+    $_SESSION['contact_started_at'] = time();
+}
 
 // Resolve the post-submit notification from the redirect query params.
 $notice = null; // ['type' => success|error, 'icon' => ..., 'text' => ...]
@@ -8,6 +14,10 @@ if (isset($_GET['sent'])) {
 } elseif (isset($_GET['error'])) {
     if ($_GET['error'] === 'invalid') {
         $notice = ['type' => 'error', 'icon' => 'bi-exclamation-circle-fill', 'text' => 'Please fill in all fields with a valid email.'];
+    } elseif ($_GET['error'] === 'verification') {
+        $notice = ['type' => 'error', 'icon' => 'bi-exclamation-circle-fill', 'text' => 'Please wait a few seconds and submit the form again.'];
+    } elseif ($_GET['error'] === 'rate') {
+        $notice = ['type' => 'error', 'icon' => 'bi-exclamation-circle-fill', 'text' => 'Please wait a minute before sending another message.'];
     } else {
         $notice = ['type' => 'error', 'icon' => 'bi-exclamation-circle-fill', 'text' => 'Message failed to send. Please try again later.'];
     }
@@ -145,17 +155,22 @@ if (isset($_GET['sent'])) {
     <p class="intro">Have a thought, a question, or just want to reach out? Send a message and it'll come straight to Freddy.</p>
 
     <form method="POST" action="send_contact.php">
+      <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($contactToken, ENT_QUOTES, 'UTF-8') ?>" />
+      <div aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden;">
+        <label for="contact-website">Leave this field empty</label>
+        <input type="text" id="contact-website" name="website" tabindex="-1" autocomplete="off" />
+      </div>
       <div class="field">
         <label for="name">Your name</label>
-        <input type="text" id="name" name="name" placeholder="Your name" required />
+        <input type="text" id="name" name="name" placeholder="Your name" maxlength="120" required />
       </div>
       <div class="field">
         <label for="email">Your email</label>
-        <input type="email" id="email" name="email" placeholder="you@example.com" required />
+        <input type="email" id="email" name="email" placeholder="you@example.com" maxlength="254" required />
       </div>
       <div class="field">
         <label for="message">Message</label>
-        <textarea id="message" name="message" placeholder="What's on your mind?" required></textarea>
+        <textarea id="message" name="message" placeholder="What's on your mind?" maxlength="10000" required></textarea>
       </div>
       <button type="submit" class="btn-primary">Send message</button>
     </form>

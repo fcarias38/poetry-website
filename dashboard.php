@@ -263,7 +263,7 @@ $csrfToken = csrf_token();
     </div>
     <div style="flex:1; padding:1rem 0.7rem; overflow-y:auto;">
       <button class="nav-item active" onclick="showPanel('home'); toggleMobileSidebar()"><i class="bi bi-grid-1x2"></i> Overview</button>
-      <button class="nav-item" onclick="showPanel('compose'); toggleMobileSidebar()"><i class="bi bi-feather"></i> New Poem</button>
+      <button class="nav-item" onclick="newPoem(); toggleMobileSidebar()"><i class="bi bi-feather"></i> New Poem</button>
       <button class="nav-item" onclick="showPanel('allpoems'); toggleMobileSidebar()"><i class="bi bi-collection"></i> All Poems</button>
       <button class="nav-item" onclick="showPanel('archived'); toggleMobileSidebar()"><i class="bi bi-archive"></i> Archived</button>
       <button class="nav-item" onclick="showPanel('stats'); toggleMobileSidebar()"><i class="bi bi-bar-chart"></i> Analytics</button>
@@ -288,7 +288,7 @@ $csrfToken = csrf_token();
     <div class="sidebar-nav">
       <p class="nav-section-label">Workspace</p>
       <button class="nav-item active" id="nav-home"     onclick="showPanel('home')"><i class="bi bi-grid-1x2"></i> Overview</button>
-      <button class="nav-item"        id="nav-compose"  onclick="showPanel('compose')"><i class="bi bi-feather"></i> New Poem</button>
+      <button class="nav-item"        id="nav-compose"  onclick="newPoem()"><i class="bi bi-feather"></i> New Poem</button>
       <button class="nav-item"        id="nav-allpoems" onclick="showPanel('allpoems')"><i class="bi bi-collection"></i> All Poems</button>
       <button class="nav-item"        id="nav-archived" onclick="showPanel('archived')"><i class="bi bi-archive"></i> Archived</button>
       <p class="nav-section-label">Insights</p>
@@ -308,7 +308,7 @@ $csrfToken = csrf_token();
     <div class="topbar">
       <span class="topbar-title" id="topbarTitle">Overview</span>
       <div class="topbar-actions">
-        <button class="btn-primary" onclick="showPanel('compose')"><i class="bi bi-feather"></i> New poem</button>
+        <button class="btn-primary" onclick="newPoem()"><i class="bi bi-feather"></i> New poem</button>
       </div>
     </div>
 
@@ -511,7 +511,7 @@ $csrfToken = csrf_token();
       document.getElementById("panel-" + id).classList.add("active");
       const navEl = document.getElementById("nav-" + id);
       if (navEl) navEl.classList.add("active");
-      const titles = { home: "Overview", compose: "New Poem", allpoems: "All Poems", archived: "Archived", stats: "Analytics", comments: "Comments", settings: "Settings" };
+      const titles = { home: "Overview", compose: document.getElementById("editPoemId").value ? "Edit Poem" : "New Poem", allpoems: "All Poems", archived: "Archived", stats: "Analytics", comments: "Comments", settings: "Settings" };
       document.getElementById("topbarTitle").textContent = titles[id] || id;
       if (id === "allpoems") renderAllPoems();
       if (id === "archived") renderArchived();
@@ -622,10 +622,15 @@ $csrfToken = csrf_token();
         showPanel("compose");
       });
     }
+    function newPoem() {
+      clearCompose();
+      showPanel("compose");
+    }
     function clearCompose() {
       document.getElementById("editPoemId").value = "";
       document.getElementById("composeForm").reset();
       document.getElementById("composeHeading").textContent = "New poem";
+      document.getElementById("topbarTitle").textContent = "New Poem";
       updateSeoPreview();
     }
     // Cancel editing/composing and return to the Overview without saving.
@@ -645,14 +650,23 @@ $csrfToken = csrf_token();
     document.getElementById("composeForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const formData = new FormData(this);
+      const isEditing = formData.get("id") !== "";
+      const saveButton = this.querySelector('button[type="submit"]');
+      if (saveButton.disabled) return;
+      saveButton.disabled = true;
       fetch("save_work.php", {
         method: "POST",
         headers: { "X-CSRF-Token": CSRF_TOKEN },
         body: formData
       }).then(r => r.json()).then(data => {
-        if (data.success) { showToast(data.updated ? "Poem updated!" : "Poem saved!"); clearCompose(); loadStats(); }
+        if (data.success) {
+          showToast(data.updated ? "Poem updated!" : "Poem saved!");
+          if (!isEditing) clearCompose();
+          loadStats();
+        }
         else { showToast(data.error || "Save failed."); }
-      });
+      }).catch(() => showToast("Could not confirm the save. Please check your connection and try again."))
+        .finally(() => { saveButton.disabled = false; });
     });
 
     // ── SEO live preview + character counter ──
