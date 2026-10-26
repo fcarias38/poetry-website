@@ -707,7 +707,6 @@
     <!-- Footer -->
     <footer class="page-footer">
       <span>&copy; 2025 Freddy Carias &mdash; All Rights Reserved</span>
-      <a href="login.php">Login</a>
     </footer>
 
     <!-- Poem reader -->

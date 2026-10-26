@@ -5,23 +5,55 @@
  * (Bluehost requirement) and sets Reply-To to the visitor so you can reply
  * straight from your inbox.
  */
-include 'admin_config.php';
+require_once 'csrf.php';
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header('Location: /gallery');
     exit;
 }
 
-$to      = $ADMIN_EMAIL;                 // where the message is delivered
+// Reject malformed fields before processing them as strings.
+foreach (['name', 'email', 'message', 'website', 'csrf_token'] as $field) {
+    if (isset($_POST[$field]) && !is_string($_POST[$field])) {
+        header('Location: /contact?error=invalid', true, 303);
+        exit;
+    }
+}
+
+// Bots commonly fill every input, including this off-screen honeypot.
+if (trim($_POST['website'] ?? '') !== '') {
+    header('Location: /contact?sent=1', true, 303);
+    exit;
+}
+
+// Require a visit to the form and enough time to fill it out.
+$startedAt = $_SESSION['contact_started_at'] ?? 0;
+if (!csrf_validate($_POST['csrf_token'] ?? null) || !$startedAt || time() - $startedAt < 3) {
+    header('Location: /contact?error=verification', true, 303);
+    exit;
+}
+if (time() - ($_SESSION['contact_last_attempt'] ?? 0) < 60) {
+    header('Location: /contact?error=rate', true, 303);
+    exit;
+}
+
 $name    = trim(strip_tags($_POST["name"] ?? ''));
 $email   = trim(strip_tags($_POST["email"] ?? ''));
 $message = trim(strip_tags($_POST["message"] ?? ''));
 
 // Basic validation
-if ($name === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || $message === '') {
+if ($name === '' || strlen($name) > 120 || preg_match('/[\r\n]/', $name)
+    || strlen($email) > 254 || preg_match('/[\r\n]/', $email)
+    || !filter_var($email, FILTER_VALIDATE_EMAIL) || $message === '' || strlen($message) > 10000) {
     header('Location: /contact?error=invalid');
     exit;
 }
+
+// Keep the session locked until the attempt is recorded to prevent parallel sends.
+$_SESSION['contact_last_attempt'] = time();
+session_write_close();
+include 'admin_config.php';
+$to = $ADMIN_EMAIL;
 
 $subject = 'New message from Think Room';
 $safeName    = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
@@ -85,7 +117,7 @@ $htmlBody = '<!DOCTYPE html>
 // Multipart (text + HTML)
 $boundary = 'tr_' . bin2hex(random_bytes(12));
 $headers  = "From: Think Room <{$MAIL_FROM}>\r\n";
-$headers .= "Reply-To: {$name} <{$email}>\r\n"; // reply goes to the visitor
+$headers .= "Reply-To: {$email}\r\n"; // reply goes to the visitor
 $headers .= "MIME-Version: 1.0\r\n";
 $headers .= "Content-Type: multipart/alternative; boundary=\"{$boundary}\"\r\n";
 $headers .= "X-Mailer: PHP/" . phpversion();

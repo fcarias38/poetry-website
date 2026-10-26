@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("ssssi", $title, $category, $body, $slug, $id);
 
     if ($stmt->execute()) {
-        header("Location: dashboard.php?success=1");
+        header("Location: edit_poem.php?id=" . $id . "&saved=1", true, 303);
         exit;
     } else {
         echo "Error updating poem.";
@@ -88,6 +88,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="bg-dark text-light">
 <div class="container py-5">
     <h1>Edit Poem</h1>
+    <?php if (isset($_GET['saved'])): ?>
+        <p class="alert alert-success" role="status">Poem updated.</p>
+    <?php endif; ?>
     <form method="POST">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES) ?>">
         <div class="mb-3">
