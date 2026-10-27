@@ -32,7 +32,8 @@ async function freePort() {
     const database = spawn(path.join(mysqlBin, 'mysqld.exe'), [`--defaults-file=${path.join(dbDir, 'my.ini')}`, '--console', '--bind-address=127.0.0.1'], { windowsHide: true, stdio: 'ignore' });
     children.push(database);
     fs.mkdirSync(siteDir);
-    for (const file of ['categories.php', 'manage_categories.php', 'save_work.php', 'csrf.php', 'preview_poem.php', 'home.shtml']) fs.copyFileSync(path.join(root, file), path.join(siteDir, file));
+    for (const file of ['categories.php', 'manage_categories.php', 'save_work.php', 'get_poems.php', 'csrf.php', 'admin_session.php', 'preview_poem.php', 'home.shtml']) fs.copyFileSync(path.join(root, file), path.join(siteDir, file));
+    fs.writeFileSync(path.join(siteDir, 'admin_config.php'), '<?php // Isolated test credentials.');
     fs.writeFileSync(path.join(siteDir, 'config.php'), `<?php
       mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
       $conn = new mysqli('127.0.0.1', 'root', '', 'category_test', ${dbPort});
@@ -50,9 +51,12 @@ async function freePort() {
         body TEXT, archived TINYINT DEFAULT 0, slug VARCHAR(255), likes INT DEFAULT 0,
         meta_description TEXT, meta_keywords TEXT
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
+      $conn->query("CREATE TABLE IF NOT EXISTS comments (id INT AUTO_INCREMENT PRIMARY KEY, poem_id INT, approved TINYINT DEFAULT 0)");
       if (isset($_GET['seed'])) {
         $conn->query("INSERT INTO poems (title, category, body, archived) VALUES
           ('First', 'God', 'First poem', 0), ('Second', 'God', 'Second poem', 1), ('Third', 'Love', 'Third poem', 0)");
+        $conn->query('UPDATE poems SET likes = 8 WHERE id = 1');
+        $conn->query('INSERT INTO comments (poem_id, approved) VALUES (1, 1), (1, 1), (1, 0), (2, 1)');
       }
       $_SESSION['logged_in'] = true;
       echo json_encode(['token' => csrf_token(), 'poems' => $conn->query('SELECT * FROM poems ORDER BY id')->fetch_all(MYSQLI_ASSOC)]);`);
@@ -72,6 +76,10 @@ async function freePort() {
     const cookie = fixture.headers.get('set-cookie').split(';')[0];
     const seeded = await fetch(base + 'fixture.php?seed=1', { headers: { Cookie: cookie } });
     const { token } = await seeded.json();
+    const galleryPoems = await (await fetch(base + 'get_poems.php')).json();
+    assert.equal(Number(galleryPoems.find(p => p.title === 'First').likes), 8, 'Gallery API includes likes');
+    assert.equal(Number(galleryPoems.find(p => p.title === 'First').comment_count), 2, 'Gallery counts approved comments only');
+    assert.equal(Number(galleryPoems.find(p => p.title === 'Third').comment_count), 0, 'Poems without comments retain zero counts');
     const headers = { Cookie: cookie, 'X-CSRF-Token': token, 'Content-Type': 'application/json' };
     const request = async (data, override = {}) => {
       const response = await fetch(base + 'manage_categories.php', data === undefined

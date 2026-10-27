@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/admin_session.php';
 if (!isset($_SESSION['logged_in'])) {
     header('Location: /login');
     exit;
@@ -10,7 +10,7 @@ $csrfToken = csrf_token();
 <!DOCTYPE html>
 <html lang="en" data-theme-scope="admin" data-theme="light">
 <head>
-  <script src="/theme.js"></script>
+  <script src="/theme.js?v=20261027-2"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="<?= htmlspecialchars($csrfToken, ENT_QUOTES) ?>">
@@ -233,7 +233,7 @@ $csrfToken = csrf_token();
     }
   </style>
   <link rel="stylesheet" href="admin.css">
-  <link rel="stylesheet" href="/theme.css">
+  <link rel="stylesheet" href="/theme.css?v=20261027-2">
 </head>
 <body>
 

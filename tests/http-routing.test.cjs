@@ -25,6 +25,9 @@ const { setTimeout: delay } = require('node:timers/promises');
     fs.writeFileSync(path.join(docroot, '.htaccess'), rules);
     for (const file of ['error.html', 'theme.css', 'theme.js']) fs.copyFileSync(path.join(root, file), path.join(docroot, file));
     fs.writeFileSync(path.join(docroot, 'sample.shtml'), '<h1>Existing page</h1>');
+    fs.mkdirSync(path.join(docroot, 'admin_tokens'));
+    fs.writeFileSync(path.join(docroot, 'admin_tokens', 'private.php'), 'PRIVATE TOKEN DATA');
+    fs.writeFileSync(path.join(docroot, 'admin_session.php'), 'PRIVATE SESSION HELPER');
     const config = `ServerRoot "${normalize(apache)}"
 Listen 127.0.0.1:${port}
 ServerName localhost
@@ -61,6 +64,11 @@ DocumentRoot "${normalize(docroot)}"
     const existing = await fetch(base + '/sample');
     assert.equal(existing.status, 200);
     assert.ok((await existing.text()).includes('Existing page'));
+    for (const url of ['/admin_tokens/private.php', '/admin_session.php']) {
+      const response = await fetch(base + url);
+      assert.equal(response.status, 403, url + ' must be private');
+      assert.ok(!(await response.text()).includes('PRIVATE'), 'No private content leaked');
+    }
     fs.writeFileSync(path.join(docroot, 'maintenance.flag'), '');
     const maintenanceError = await fetch(base + '/502');
     assert.equal(maintenanceError.status, 502);

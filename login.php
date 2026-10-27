@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en" data-theme-scope="admin" data-theme="light">
 <head>
-  <script src="/theme.js"></script>
+  <script src="/theme.js?v=20261027-2"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Think Room | Sign in</title>
@@ -144,11 +144,12 @@
 
     .row-between {
       display: flex; align-items: center; justify-content: space-between;
+        flex-wrap: wrap; gap: 0.75rem;
       margin: 0.2rem 0 1.5rem;
     }
     .remember { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
     .remember input {
-      width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer;
+        width: 16px; height: 16px; flex-shrink: 0; accent-color: var(--accent); cursor: pointer;
     }
     .remember label { font-size: 0.8rem; color: var(--text-dim); cursor: pointer; }
     .link-accent {
@@ -191,7 +192,7 @@
     }
   </style>
   <link rel="stylesheet" href="admin.css">
-  <link rel="stylesheet" href="/theme.css">
+  <link rel="stylesheet" href="/theme.css?v=20261027-2">
 </head>
 <body>
 
@@ -244,7 +245,7 @@
         <div class="row-between">
           <span class="remember">
             <input type="checkbox" id="rememberMe" name="remember" />
-            <label for="rememberMe">Remember me</label>
+            <label for="rememberMe">Keep me signed in for 7 days</label>
           </span>
           <a href="forgot_password.php" class="link-accent">Forgot password?</a>
         </div>

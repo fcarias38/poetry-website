@@ -13,7 +13,7 @@
  */
 
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+    require_once __DIR__ . '/admin_session.php';
 }
 
 if (!function_exists('csrf_token')) {

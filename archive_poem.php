@@ -3,7 +3,7 @@
  * archive_poem.php — admin-only. Archive or unarchive a poem.
  * POST JSON: { "id": N, "archived": true|false }
  */
-session_start();
+require_once __DIR__ . '/admin_session.php';
 header('Content-Type: application/json');
 
 if (empty($_SESSION['logged_in'])) {

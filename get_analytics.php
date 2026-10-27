@@ -4,7 +4,7 @@
  * Returns totals, per-poem engagement, category breakdown, recent comments,
  * and a 30-day comment trend. No external services.
  */
-session_start();
+require_once __DIR__ . '/admin_session.php';
 header('Content-Type: application/json');
 
 if (empty($_SESSION['logged_in'])) {

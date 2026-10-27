@@ -7,7 +7,7 @@
 
 // Start session only if one hasn't been started yet
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+    require_once __DIR__ . '/admin_session.php';
 }
 
 $maintenanceFlagFile = __DIR__ . '/maintenance.flag';

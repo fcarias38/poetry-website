@@ -17,12 +17,12 @@ if ($result) {
 <!DOCTYPE html>
 <html lang="en" data-theme-scope="site" data-theme="dark">
 <head>
-  <script src="/theme.js"></script>
+  <script src="/theme.js?v=20261027-2"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>All Poems</title>
   <meta name="robots" content="index,follow">
-  <link rel="stylesheet" href="/theme.css">
+  <link rel="stylesheet" href="/theme.css?v=20261027-2">
 </head>
 <body class="poems-index">
   <h1>All Poems</h1>
