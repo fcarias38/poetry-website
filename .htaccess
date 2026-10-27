@@ -70,12 +70,13 @@ Options +Includes
 </FilesMatch>
 
 # ── Block the password-reset token store entirely ──
-RewriteRule ^reset_tokens/ - [F,L]
+RewriteRule ^(reset_tokens|admin_tokens)/ - [F,L]
+RewriteRule ^admin_session\.php$ - [F,L]
 
 # ── Clean URLs: hide .php extension ──
 # Redirect direct .php requests to clean URLs (except config files)
 RewriteCond %{THE_REQUEST} \s/([^.]+)\.php[?\s] [NC]
-RewriteCond %1 !^(config|admin_config|admin_login|maintenance_check|save_work|save_comment|update_likes|get_poems|get_poem_by_id|get_poem_public|get_likes_comments|delete_poem|edit_poem|all_poems|send_contact|logout|toggle_maintenance|track_share|track_view|get_analytics|get_pending_comments|moderate_comment|reset_request|reset_password|forgot_password|manage_categories|preview_poem|categories)$ [NC]
+RewriteCond %1 !^(config|admin_config|admin_login|maintenance_check|save_work|save_comment|update_likes|get_poems|get_poem_by_id|get_poem_public|get_likes_comments|delete_poem|edit_poem|all_poems|send_contact|logout|toggle_maintenance|track_share|track_view|get_analytics|get_pending_comments|moderate_comment|reset_request|reset_password|forgot_password|manage_categories|preview_poem|support_details|categories)$ [NC]
 RewriteRule ^([^.]+)\.php$ /$1 [R=301,L]
 
 # ── Redirect .shtml to clean URLs ──

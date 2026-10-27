@@ -15,10 +15,14 @@ const chrome = process.env.TEST_CHROME || 'C:/Program Files/Google/Chrome/Applic
     const status = await new Promise((resolve, reject) => { child.once('error', reject); child.once('exit', resolve); });
     fs.writeFileSync(path.join(temp, label + '.html'), html);
     assert.equal(status, 0, stderr);
-    const cards = [...html.matchAll(/<a\b[^>]*class="poem-card[^>]*>/g)].length;
+    const markup = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+    const cards = [...markup.matchAll(/<article\b[^>]*class="poem-card[^>]*>/g)].length;
     const title = html.match(/<title>(.*?)<\/title>/s)?.[1];
     console.log(`${url}: ${title}; rendered cards=${cards}; screenshot=${path.join(temp, label + '.png')}`);
     assert.ok(cards > 0, `Live ${label} did not render poems. Inspect ${temp}`);
+    for (const action of ['like', 'comment', 'share']) {
+      assert.equal([...markup.matchAll(new RegExp('class="card-action card-' + action + '(?: |")', 'g'))].length, cards, `Every live card has a ${action} button`);
+    }
     assert.ok(!html.includes('<title>Internal Server Error</title>'));
   }
 })().catch(error => { console.error(error); process.exitCode = 1; });

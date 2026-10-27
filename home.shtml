@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" data-theme-scope="site" data-theme="dark">
   <head>
-  <script src="/theme.js"></script>
+  <script src="/theme.js?v=20261027-2"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Think Room – A Poetry Gallery by Freddy Carias</title>
-    <meta name="description" content="Think Room is a poetry gallery by Freddy Carias — a space to read, reflect, and feel." />
+    <meta name="description" content="Read original poetry by Freddy Carias about love, loss, faith, and forgiveness." />
     <meta name="author" content="Freddy Carias" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://freddycarias.com/gallery" />
     <meta property="og:title" content="Think Room | Poetry Gallery" />
-    <meta property="og:description" content="Think Room is a poetry gallery by Freddy Carias — a space to read, reflect, and feel." />
+    <meta property="og:description" content="Read original poetry by Freddy Carias about love, loss, faith, and forgiveness." />
     <meta property="og:image" content="https://freddycarias.com/images/jessica-christian-wuqYCTAYPH4-unsplash.jpg" />
     <meta property="og:url" content="https://freddycarias.com/gallery" />
     <meta property="og:type" content="website" />
@@ -272,11 +272,27 @@
       .poem-card {
         break-inside: avoid;
         margin-bottom: 1.6rem;
-        cursor: pointer;
         text-decoration: none;
         display: block;
         color: inherit;
       }
+      .card-content { display:block; color:inherit; text-decoration:none; }
+      .card-read { text-decoration:none; min-height:44px; width:fit-content; }
+      .poem-card .card-footer { flex-wrap:nowrap; gap:0.5rem; margin-top:1rem; }
+      .poem-card .card-read { flex-shrink:0; }
+      .poem-card .card-engagement { display:flex; flex-wrap:nowrap; width:auto; gap:0.15rem; margin-left:auto; border:0; padding:0; }
+      .card-action { display:flex; align-items:center; justify-content:center; gap:0.3rem; min-width:44px; min-height:44px; padding:0.45rem 0.3rem; border:0; border-radius:6px; background:transparent; color:var(--text-dim); font:500 0.7rem/1.5 "Inter",system-ui,sans-serif; cursor:pointer; white-space:nowrap; }
+      .card-action-label { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+      .card-action:hover { background:var(--surface); color:var(--accent); }
+      .card-action.liked { color:var(--accent); }
+      .card-action:disabled { cursor:default; }
+      .card-action i { font-size:0.9rem; }
+      .card-content:focus-visible, .card-read:focus-visible, .card-action:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+      .card-status { font:400 0.75rem/1.6 "Inter",system-ui,sans-serif; color:var(--text-dim); overflow-wrap:anywhere; }
+      .card-status:not(:empty) { margin-top:0.65rem; }
+      .share-copy-field { width:100%; margin-top:0.65rem; padding:0.65rem; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:6px; }
+      #readerFeedback { font:400 0.85rem/1.6 "Inter",system-ui,sans-serif; color:var(--accent); }
+      #readerFeedback:not(:empty) { margin:1rem 0; }
       .card-inner {
         background: var(--surface);
         border: 1px solid var(--border);
@@ -553,7 +569,7 @@
         white-space: nowrap;
       }
       .act-btn:hover { color: var(--accent); background: rgba(200,169,110,0.08); }
-      .act-btn.liked { color: #e5807a; }
+      .act-btn.liked { color: var(--accent); }
       .act-btn i { font-size: 0.85rem; }
       .act-sep { width: 1px; height: 12px; background: var(--border); flex-shrink: 0; }
       .act-post {
@@ -669,7 +685,7 @@
       .draft-preview-reader #commentsList, .draft-preview-reader #commentForm,
       .draft-preview-reader .reader-actions { display: none !important; }
     </style>
-    <link rel="stylesheet" href="/theme.css">
+    <link rel="stylesheet" href="/theme.css?v=20261027-2">
 </head>
   <body>
 
@@ -691,11 +707,13 @@
 
     <!-- Mobile dropdown -->
     <div class="mobile-menu" id="mobileMenu">
-      <span class="mobile-topics-label">Topics</span>
+    <details class="mobile-topics">
+      <summary>Topics</summary>
       <div id="mobileTopics"></div>
-      <a href="/author">Author</a>
-      <a href="/contact">Contact</a>
-    </div>
+    </details>
+    <a href="/author">Author</a>
+    <a href="/contact">Contact</a>
+  </div>
 
     <!-- Masthead -->
     <div class="masthead">
@@ -714,13 +732,13 @@
 
     <!-- Footer -->
     <footer class="page-footer">
-      <span>&copy; 2025 Freddy Carias &mdash; All Rights Reserved</span>
-    </footer>
+    <span>&copy; 2025 Freddy Carias &mdash; All Rights Reserved</span>
+  </footer>
 
     <!-- Poem reader -->
     <div class="reader-overlay" id="readerOverlay">
       <div class="reader-backdrop" id="readerBackdrop"></div>
-      <div class="reader-panel">
+      <div class="reader-panel" role="dialog" aria-modal="true" aria-labelledby="readerTitle" tabindex="-1">
         <div class="reader-header">
           <div class="reader-meta">
             <p class="reader-category" id="readerCategory"></p>
@@ -733,6 +751,7 @@
           <div class="reader-divider"></div>
           <p class="comments-label">Comments</p>
           <div id="commentsList"></div>
+          <p id="readerFeedback" role="status" aria-live="polite"></p>
           <div class="comment-form" id="commentForm">
             <input type="text" id="commentName" placeholder="Your name (optional)" />
             <textarea id="commentInput" rows="3" placeholder="Leave a thought..."></textarea>
@@ -741,7 +760,7 @@
         </div>
         <div class="reader-actions">
           <button class="act-btn" id="likeBtn" onclick="likePoem()">
-            <i class="bi bi-heart"></i>&nbsp;<span id="likeCount">0</span>
+            <i class="bi bi-hand-thumbs-up" aria-hidden="true"></i>&nbsp;<span class="like-label">Like</span>&nbsp;<span id="likeCount">0</span>
           </button>
           <div class="act-sep"></div>
           <button class="act-btn" onclick="openCommentForm()"><i class="bi bi-chat-dots"></i>&nbsp;Comment</button>
@@ -754,6 +773,7 @@
       </div>
     </div>
 
+    <script src="/gallery-actions.js?v=20261027-1"></script>
     <script>
       // ── Mobile menu ──
       document.getElementById("hamburger").addEventListener("click", () => {
@@ -766,37 +786,52 @@
         document.getElementById("mobileMenu").classList.remove("open");
       }
       function closeModal(id) {
-        document.getElementById(id).classList.remove("open");
+        document.getElementById(id)?.classList.remove("open");
       }
 
       // ── Reader ──
-      function openPoem(card) {
+      let readerReturnUrl = window.location.pathname + window.location.search;
+      let readerReturnFocus = null;
+      function openPoem(card, focusComments = false, trigger = null) {
+        if (!document.getElementById("readerOverlay").classList.contains("open")) {
+          readerReturnUrl = window.location.pathname + window.location.search + window.location.hash;
+          readerReturnFocus = trigger || document.activeElement;
+        }
         resetReader();
         const title    = card.querySelector(".card-title").innerText;
         const cat      = card.querySelector(".card-category").innerText;
         const fullText = card.getAttribute("data-full");
         document.getElementById("readerCategory").innerText = cat;
         document.getElementById("readerTitle").innerText    = title;
-        document.getElementById("readerBody").innerText     = fullText;
+        document.getElementById("readerBody").textContent   = fullText;
         document.getElementById("readerOverlay").classList.add("open");
         document.body.style.overflow = "hidden";
-        loadLikesAndComments(title);
-        window.location.hash = "poem=" + encodeURIComponent(title);
+        GalleryActions.select(card);
+        GalleryActions.loadComments(card);
+        history.replaceState(null, "", window.location.pathname + window.location.search + "#poem=" + encodeURIComponent(title));
+        if (focusComments) {
+          document.getElementById("commentForm").style.display = "block";
+          document.getElementById("commentInput").focus();
+        } else {
+          document.getElementById("readerCloseBtn").focus();
+        }
         // Native view tracking (fire-and-forget)
         fetch("track_view.php", {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title: title })
+          body: JSON.stringify({ id: Number(card.dataset.poemId) })
         }).catch(() => {});
       }
 
       function closeReader() {
         document.getElementById("readerOverlay").classList.remove("open");
         document.body.style.overflow = "";
-        history.replaceState(null, "", window.location.pathname);
+        history.replaceState(null, "", readerReturnUrl);
         resetReader();
+        readerReturnFocus?.focus({ preventScroll:true });
       }
 
       function resetReader() {
+        GalleryActions.select(null);
         document.getElementById('readerOverlay').classList.remove('draft-preview-reader');
         document.getElementById("commentForm").style.display    = "none";
         document.getElementById("commentInput").value           = "";
@@ -805,7 +840,12 @@
         document.getElementById("copyConfirm").classList.remove("show");
         document.getElementById("copyLinkBtn").classList.remove("copied");
         document.getElementById("likeBtn").classList.remove("liked");
+        document.querySelector("#likeBtn .like-label").textContent = "Like";
+        document.querySelector("#likeBtn i").className = "bi bi-hand-thumbs-up";
         document.getElementById("likeCount").innerText          = "0";
+        document.getElementById("likeBtn").disabled = false;
+        document.querySelector("#commentForm button").disabled = false;
+        document.getElementById("readerFeedback").textContent = "";
       }
 
       // ── Filter ──
@@ -819,14 +859,7 @@
 
       // ── Likes ──
       function likePoem() {
-        const title = document.getElementById("readerTitle").innerText;
-        fetch("update_likes.php", {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title })
-        }).then(r => r.json()).then(data => {
-          document.getElementById("likeCount").innerText = data.likes;
-          document.getElementById("likeBtn").classList.add("liked");
-        });
+        GalleryActions.like(GalleryActions.current());
       }
 
       // ── Comments ──
@@ -835,35 +868,11 @@
         f.style.display = f.style.display === "block" ? "none" : "block";
       }
       function saveComment() {
-        const title   = document.getElementById("readerTitle").innerText;
-        const name    = document.getElementById("commentName").value.trim();
-        const comment = document.getElementById("commentInput").value.trim();
-        if (!comment) return;
-        fetch("save_comment.php", {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title, comment, name })
-        }).then(r => r.json()).then(data => {
-          document.getElementById("commentInput").value = "";
-          document.getElementById("commentName").value = "";
-          // New comments are pending moderation — re-render only approved ones
-          // and show a brief notice.
-          if (data.comments) displayComments(data.comments);
-          document.getElementById("commentForm").style.display = "none";
-          const list = document.getElementById("commentsList");
-          const note = document.createElement("p");
-          note.className = "comment-empty";
-          note.style.color = "#c8a96e";
-          note.textContent = "Thank you — your comment is awaiting approval.";
-          list.prepend(note);
-          setTimeout(() => note.remove(), 5000);
-        });
+        GalleryActions.postComment();
       }
       function loadLikesAndComments(title) {
-        fetch("get_likes_comments.php?title=" + encodeURIComponent(title))
-          .then(r => r.json()).then(data => {
-            document.getElementById("likeCount").innerText = data.likes;
-            displayComments(data.comments);
-          });
+        const card = GalleryActions.current();
+        if (card) GalleryActions.loadComments(card);
       }
       function displayComments(comments) {
         const list = document.getElementById("commentsList");
@@ -875,8 +884,16 @@
         comments.forEach(c => {
           const el = document.createElement("div");
           el.className = "comment-item";
-          const name = c.name ? `<strong>${c.name}</strong>: ` : "";
-          el.innerHTML = `${name}${c.comment}<div class="comment-time">${timeAgo(c.created_at)}</div>`;
+          if (c.name) {
+            const name = document.createElement("strong");
+            name.textContent = c.name;
+            el.append(name, document.createTextNode(": "));
+          }
+          el.appendChild(document.createTextNode(c.comment || ""));
+          const time = document.createElement("div");
+          time.className = "comment-time";
+          time.textContent = timeAgo(c.created_at);
+          el.appendChild(time);
           list.appendChild(el);
         });
       }
@@ -891,6 +908,8 @@
         }).catch(() => {});
       }
       function shareUrl() {
+        const card = GalleryActions.current();
+        if (card) return new URL(card.dataset.url, location.origin).href;
         const title = document.getElementById("readerTitle").innerText;
         return window.location.href.split("#")[0] + "#poem=" + encodeURIComponent(title);
       }
@@ -958,27 +977,36 @@
           data.forEach((poem, i) => {
             if (poem.archived == 1) return; // hide retired poems from the public gallery
             cats.add(poem.category);
-            const card = document.createElement("a");
+            const card = document.createElement("article");
             card.className = "poem-card";
             card.dataset.category = poem.category;
             // Use slug if available, fallback to id
-            card.href = poem.slug ? `/poems/${poem.slug}` : `/poem?id=${poem.id}`;
             const len = 150; // uniform snippet length for even-looking cards
             card.innerHTML = `
               <div class="card-inner">
+                <a class="card-content">
                 <div class="card-category"></div>
                 <h2 class="card-title"></h2>
                 <p class="card-snippet"></p>
+                </a>
                 <div class="card-footer">
-                  <span class="card-read">Read <i class="bi bi-arrow-right"></i></span>
+                  <a class="card-read">Read <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+                  <div class="card-engagement">
+                    <button class="card-action card-like" type="button" title="Like"><i class="bi bi-hand-thumbs-up" aria-hidden="true"></i><span class="card-like-label card-action-label">Like</span><span class="card-likes"></span></button>
+                    <button class="card-action card-comment" type="button" title="Comment" aria-haspopup="dialog" aria-controls="readerOverlay"><i class="bi bi-chat-dots" aria-hidden="true"></i><span class="card-action-label">Comment</span><span class="card-comments"></span></button>
+                    <button class="card-action card-share" type="button" title="Share"><i class="bi bi-box-arrow-up" aria-hidden="true"></i><span class="card-action-label">Share</span></button>
+                  </div>
                 </div>
+                <p class="card-status" role="status" aria-live="polite"></p>
               </div>`;
             card.querySelector('.card-category').textContent = poem.category || 'verse';
             card.querySelector('.card-title').textContent = poem.title;
             card.querySelector('.card-snippet').textContent = poem.body.substring(0, len) + '…';
+            GalleryActions.setup(card, poem);
             if (poem.preview) {
-              card.href = '#preview';
+              card.querySelectorAll('.card-content, .card-read').forEach(link => { link.href = '#preview'; });
               card.classList.add('draft-preview-card');
+              card.querySelector('.card-engagement').hidden = true;
               card.querySelector('.card-read').textContent = 'Read preview →';
               card.addEventListener('click', event => { event.preventDefault(); openPreviewPoem(); });
             }
@@ -1033,6 +1061,7 @@
           cats.forEach(cat => {
             const a = document.createElement("a");
             a.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+            a.href = "/gallery?topic=" + encodeURIComponent(cat);
             a.onclick = (e) => { e.preventDefault(); filterByTopic(cat); };
             desktop.appendChild(a);
           });
@@ -1040,12 +1069,14 @@
         if (mobile) {
           mobile.innerHTML = "";
           const allM = document.createElement("a");
-          allM.textContent = "All";
+          allM.textContent = "All poems";
+          allM.href = "/gallery";
           allM.onclick = (e) => { e.preventDefault(); filterByTopic("all"); };
           mobile.appendChild(allM);
           cats.forEach(cat => {
             const a = document.createElement("a");
             a.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+            a.href = "/gallery?topic=" + encodeURIComponent(cat);
             a.onclick = (e) => { e.preventDefault(); filterByTopic(cat); };
             mobile.appendChild(a);
           });
@@ -1097,12 +1128,19 @@
         // Reader close
         document.getElementById("readerCloseBtn").addEventListener("click", e => { e.stopPropagation(); closeReader(); });
         document.getElementById("readerBackdrop").addEventListener("click", () => closeReader());
-        document.getElementById("authorModal").addEventListener("click",  e => { if (e.target === document.getElementById("authorModal"))  closeModal("authorModal"); });
-        document.getElementById("contactModal").addEventListener("click", e => { if (e.target === document.getElementById("contactModal")) closeModal("contactModal"); });
+        document.getElementById("authorModal")?.addEventListener("click",  e => { if (e.target === document.getElementById("authorModal"))  closeModal("authorModal"); });
+        document.getElementById("contactModal")?.addEventListener("click", e => { if (e.target === document.getElementById("contactModal")) closeModal("contactModal"); });
 
         // Escape key
         document.addEventListener("keydown", e => {
-          if (e.key === "Escape") { closeReader(); closeModal("authorModal"); closeModal("contactModal"); }
+          if (!document.getElementById("readerOverlay").classList.contains("open")) return;
+          if (e.key === "Escape") { e.preventDefault(); closeReader(); }
+          if (e.key === "Tab") {
+            const controls = [...document.querySelectorAll('.reader-panel button:not(:disabled), .reader-panel input, .reader-panel textarea, .reader-panel a[href]')].filter(el => el.getClientRects().length);
+            const first = controls[0], last = controls[controls.length - 1];
+            if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+            else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+          }
         });
       });
     </script>

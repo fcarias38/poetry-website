@@ -26,7 +26,7 @@ if (isset($_GET['sent'])) {
 <!DOCTYPE html>
 <html lang="en" data-theme-scope="site" data-theme="dark">
 <head>
-  <script src="/theme.js"></script>
+  <script src="/theme.js?v=20261027-2"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contact | Think Room</title>
@@ -123,7 +123,7 @@ if (isset($_GET['sent'])) {
       .toast { top:72px; }
     }
   </style>
-  <link rel="stylesheet" href="/theme.css">
+  <link rel="stylesheet" href="/theme.css?v=20261027-2">
 </head>
 <body>
 <?php if ($notice): ?>
@@ -146,9 +146,12 @@ if (isset($_GET['sent'])) {
     <button class="topnav-hamburger" id="hamburger" aria-label="Menu"><i class="bi bi-list"></i></button>
   </nav>
   <div class="mobile-menu" id="mobileMenu">
+    <details class="mobile-topics">
+      <summary>Topics</summary>
+      <div id="mobileTopics"></div>
+    </details>
     <a href="/author">Author</a>
     <a href="/contact">Contact</a>
-    <div id="mobileTopics"></div>
   </div>
 
   <main class="wrap">
@@ -177,15 +180,10 @@ if (isset($_GET['sent'])) {
       <button type="submit" class="btn-primary">Send message</button>
     </form>
 
-    <div class="alt-contact">
-      Prefer email? Reach out any time at
-      <a href="mailto:fcarias38@outlook.com">fcarias38@outlook.com</a>.
-    </div>
   </main>
 
   <footer class="page-footer">
     <span>&copy; 2025 Freddy Carias &mdash; All Rights Reserved</span>
-    <a href="/">&larr; Back to the site</a>
   </footer>
 
   <script>
@@ -216,7 +214,7 @@ if (isset($_GET['sent'])) {
         (data || []).forEach(p => { if (p.category && !cats.includes(p.category)) cats.push(p.category); });
         if (!cats.length) { dd.style.display = "none"; return; }
         let html = '<a href="/">All poems</a>';
-        let mhtml = '';
+        let mhtml = '<a href="/gallery">All poems</a>';
         cats.forEach(c => {
           const label = c.charAt(0).toUpperCase() + c.slice(1);
           const href  = '/gallery?topic=' + encodeURIComponent(c);

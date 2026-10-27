@@ -2,7 +2,7 @@
 /**
  * get_pending_comments.php — admin-only. Lists comments awaiting approval.
  */
-session_start();
+require_once __DIR__ . '/admin_session.php';
 header('Content-Type: application/json');
 
 if (empty($_SESSION['logged_in'])) {

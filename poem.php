@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en" data-theme-scope="site" data-theme="dark">
   <head>
-  <script src="/theme.js"></script>
+  <script src="/theme.js?v=20261027-2"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -207,7 +207,7 @@
         font-family: "Inter", sans-serif; white-space: nowrap;
       }
       .act-btn:hover { color: var(--accent); background: var(--surface-2); border-color: var(--border-2); }
-      .act-btn.liked { color: #e5807a; border-color: rgba(229,128,122,0.4); }
+      .act-btn.liked { color: var(--accent); border-color: var(--accent); }
       .act-btn i { font-size: 0.85rem; }
 
       .act-divider { width: 1px; height: 22px; background: var(--border); margin: 0 0.3rem; flex-shrink: 0; }
@@ -382,7 +382,7 @@
         .read-next-grid { grid-template-columns: 1fr; }
       }
     </style>
-    <link rel="stylesheet" href="/theme.css">
+    <link rel="stylesheet" href="/theme.css?v=20261027-2">
 </head>
   <body>
 
@@ -422,7 +422,7 @@
 
       <div class="poem-actions">
         <button class="act-btn like" id="likeBtn" onclick="likePoem()" title="Like this poem">
-          <i class="bi bi-heart"></i>&nbsp;<span id="likeCount"><?= $likes ?></span>
+          <i class="bi bi-hand-thumbs-up" aria-hidden="true"></i>&nbsp;<span class="like-label">Like</span>&nbsp;<span id="likeCount"><?= $likes ?></span>
         </button>
         <button class="act-btn" id="commentToggle" onclick="toggleComments()"
                 aria-expanded="<?= $cCount > 0 ? 'true' : 'false' ?>" aria-controls="commentsPanel" title="Comments">
@@ -524,9 +524,7 @@
       <?php endif; ?>
     </main>
 
-    <footer class="page-footer">
-      &copy; 2025 Freddy Carias &mdash; <a href="/">Think Room</a>
-    </footer>
+
 
     <script>
       const POEM_TITLE = <?= json_encode($poem['title']) ?>;
@@ -553,6 +551,8 @@
         }).then(r => r.json()).then(data => {
           document.getElementById("likeCount").innerText = data.likes;
           document.getElementById("likeBtn").classList.add("liked");
+          document.querySelector("#likeBtn .like-label").textContent = "Liked";
+          document.querySelector("#likeBtn i").className = "bi bi-hand-thumbs-up-fill";
         });
       }
       // ── Share ──
@@ -628,6 +628,9 @@
     </script>
 
     <?php endif; ?>
+  <footer class="page-footer">
+    <span>&copy; 2025 Freddy Carias &mdash; All Rights Reserved</span>
+  </footer>
   </body>
 </html>
 <?php $conn->close(); ?>

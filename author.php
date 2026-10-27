@@ -1,16 +1,21 @@
-<?php include 'maintenance_check.php'; ?>
+<?php
+include 'maintenance_check.php';
+require_once 'csrf.php';
+header('Cache-Control: private, no-store');
+$supportToken = csrf_token();
+?>
 <!DOCTYPE html>
 <html lang="en" data-theme-scope="site" data-theme="dark">
 <head>
-  <script src="/theme.js"></script>
+  <script src="/theme.js?v=20261027-2"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>About the Author | Think Room</title>
-  <meta name="description" content="About Freddy Carias — the voice behind Think Room, a gallery of poetry and reflection." />
+  <meta name="description" content="Freddy Carias is a poet and the creator of Think Room, where he shares his original poetry." />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://freddycarias.com/author" />
   <meta property="og:title" content="About the Author | Think Room" />
-  <meta property="og:description" content="About Freddy Carias — the voice behind Think Room." />
+  <meta property="og:description" content="Meet Freddy Carias, the poet behind Think Room." />
   <meta property="og:url" content="https://freddycarias.com/author" />
   <meta property="og:type" content="profile" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
@@ -24,7 +29,7 @@
     }
     *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
     html { scroll-behavior:smooth; }
-    body { font-family:"Inter",system-ui,sans-serif; background:var(--bg); color:var(--text-dim); min-height:100vh; -webkit-font-smoothing:antialiased; }
+    body { font-family:"Inter",system-ui,sans-serif; background:var(--bg); color:var(--text-dim); min-height:100vh; display:flex; flex-direction:column; -webkit-font-smoothing:antialiased; }
 
     .topnav { position:sticky; top:0; z-index:200; background:rgba(22,22,24,0.92); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 2.5rem; height:62px; }
     .topnav-brand { font-family:"Cormorant Garamond",serif; font-size:1.3rem; font-weight:600; font-style:italic; color:var(--text); text-decoration:none; display:flex; align-items:center; gap:0.55rem; }
@@ -49,15 +54,20 @@
     .mobile-menu a { color:var(--text-dim); text-decoration:none; font-size:0.72rem; font-weight:500; letter-spacing:0.12em; text-transform:uppercase; padding:0.8rem 0; border-bottom:1px solid var(--border); }
     .mobile-menu a:last-child { border-bottom:none; }
 
-    .wrap { max-width:720px; margin:0 auto; padding:4rem 2rem 5rem; }
+    .wrap { width:100%; max-width:720px; flex:1; margin:0 auto; padding:4rem 2rem 5rem; }
     .eyebrow { font-size:0.64rem; font-weight:600; letter-spacing:0.24em; text-transform:uppercase; color:var(--accent); margin-bottom:0.9rem; }
     h1 { font-family:"Cormorant Garamond",serif; font-size:clamp(2.2rem,6vw,3.4rem); font-weight:400; font-style:italic; color:var(--text); line-height:1.1; margin-bottom:1rem; }
     .rule { width:44px; height:2px; background:var(--accent); opacity:0.6; margin:1.8rem 0; }
     .prose p { font-family:"Cormorant Garamond",serif; font-size:1.25rem; font-weight:300; line-height:1.9; color:#d4cec2; margin-bottom:1.5rem; }
-    .support-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.6rem 1.8rem; margin-top:2.5rem; }
-    .support-card .label { font-size:0.6rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent); margin-bottom:0.8rem; }
-    .support-card p { font-size:0.95rem; color:var(--text-dim); line-height:1.7; }
-    .support-card strong { color:var(--text); }
+    .support-card { position:relative; display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:1.4rem; margin-top:3rem; padding-top:2rem; border-top:1px solid var(--border); }
+    .support-card h2 { font-family:"Cormorant Garamond",serif; font-size:1.65rem; font-weight:400; color:var(--text); line-height:1.2; margin-bottom:0.55rem; }
+    .support-note { font-size:0.8rem; color:var(--text-dim); line-height:1.7; }
+    .support-card .support-reveal { display:inline-flex; align-items:center; justify-content:center; gap:0.75rem; min-height:46px; margin:0; padding:0.65rem 1.1rem; border:1px solid var(--accent-d); border-radius:999px; background:transparent; color:var(--accent); font:500 0.76rem/1.5 "Inter",system-ui,sans-serif; transition:background 0.2s,border-color 0.2s; }
+    .support-card .support-reveal:hover { background:var(--surface); border-color:var(--accent); }
+    .support-card .support-reveal:disabled { cursor:wait; opacity:0.65; }
+    .support-card .support-reveal[hidden] { display:none; }
+    .support-reveal svg { width:16px; height:16px; flex-shrink:0; }
+    .support-card #supportDetails { grid-column:1/-1; margin:0; padding:0.2rem 0 0.2rem 1rem; border-left:2px solid var(--accent-d); color:var(--text); font-size:0.9rem; line-height:1.8; overflow-wrap:anywhere; }
 
     .page-footer { padding:1.6rem 2.5rem; border-top:1px solid var(--border); font-size:0.64rem; color:var(--text-mute); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; letter-spacing:0.08em; text-transform:uppercase; }
     .page-footer a { color:var(--text-dim); text-decoration:none; transition:color 0.2s; }
@@ -68,10 +78,13 @@
       .topnav-links { display:none; }
       .topnav-hamburger { display:block; }
       .wrap { padding:2.5rem 1.2rem 3.5rem; }
-      .page-footer { padding:1.2rem; flex-direction:column; align-items:flex-start; }
+      .support-card { grid-template-columns:minmax(0,1fr); gap:1.1rem; margin-top:2.5rem; padding-top:1.6rem; }
+      .support-card .support-reveal { justify-self:start; }
+      .page-footer { padding:1.8rem 1.2rem 2.2rem; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:1rem; }
+      .page-footer span { display:block; }
     }
   </style>
-  <link rel="stylesheet" href="/theme.css">
+  <link rel="stylesheet" href="/theme.css?v=20261027-2">
 </head>
 <body>
   <nav class="topnav">
@@ -87,9 +100,12 @@
     <button class="topnav-hamburger" id="hamburger" aria-label="Menu"><i class="bi bi-list"></i></button>
   </nav>
   <div class="mobile-menu" id="mobileMenu">
+    <details class="mobile-topics">
+      <summary>Topics</summary>
+      <div id="mobileTopics"></div>
+    </details>
     <a href="/author">Author</a>
     <a href="/contact">Contact</a>
-    <div id="mobileTopics"></div>
   </div>
 
   <main class="wrap">
@@ -97,23 +113,47 @@
     <h1>Freddy Carias</h1>
     <div class="rule"></div>
     <div class="prose">
-      <p>Freddy Carias is the voice behind <strong style="color:var(--text);font-style:normal;">Think Room</strong> — a quiet gallery of thoughts, poetry, and reflection.</p>
-      <p>Every word here is written from lived experience, raw honesty, and a desire to make others feel less alone. These poems move through faith, love, loss, and the search for meaning — a record of a soul thinking out loud.</p>
+      <p>Freddy Carias is a poet and the creator of <strong style="color:var(--text);font-style:normal;">Think Room</strong>, where he shares his original poetry.</p>
     </div>
 
-    <div class="support-card">
-      <p class="label">Support the work</p>
-      <p>If these words have meant something to you, you can support their continued creation.</p>
-      <p style="margin-top:0.8rem;">Zelle: <strong>fcarias38@outlook.com</strong></p>
-    </div>
+    <section class="support-card" aria-labelledby="supportTitle">
+      <div class="support-copy">
+        <h2 id="supportTitle">Support the poetry</h2>
+        <p class="support-note">Contributions via Zelle are welcome.</p>
+      </div>
+      <button class="support-reveal" id="showZelle" type="button" aria-expanded="false" aria-controls="supportDetails"><span>Support via Zelle</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button>
+      <div class="support-trap" aria-hidden="true"><label for="supportWebsite">Website</label><input id="supportWebsite" type="text" tabindex="-1" autocomplete="off"></div>
+      <p id="supportDetails" role="status" aria-live="polite" hidden></p>
+    </section>
   </main>
 
   <footer class="page-footer">
     <span>&copy; 2025 Freddy Carias &mdash; All Rights Reserved</span>
-    <a href="/">&larr; Back to the site</a>
   </footer>
 
   <script>
+    document.getElementById("showZelle").addEventListener("click", async function () {
+      const details = document.getElementById("supportDetails");
+      this.disabled = true;
+      details.hidden = false;
+      details.textContent = "Loading Zelle details...";
+      try {
+        const response = await fetch("/support_details.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-CSRF-Token": <?= json_encode($supportToken) ?> },
+          body: JSON.stringify({ website: document.getElementById("supportWebsite").value })
+        });
+        const data = await response.json();
+        if (!response.ok || !data.email) throw new Error(data.error || "Please try again later.");
+        details.textContent = "Zelle: " + data.email;
+        this.setAttribute("aria-expanded", "true");
+        this.hidden = true;
+      } catch (error) {
+        details.textContent = error.message;
+        this.disabled = false;
+      }
+    });
+
     document.getElementById("hamburger").addEventListener("click", () => {
       document.getElementById("mobileMenu").classList.toggle("open");
     });
@@ -141,7 +181,7 @@
         (data || []).forEach(p => { if (p.category && !cats.includes(p.category)) cats.push(p.category); });
         if (!cats.length) { dd.style.display = "none"; return; }
         let html = '<a href="/">All poems</a>';
-        let mhtml = '';
+        let mhtml = '<a href="/gallery">All poems</a>';
         cats.forEach(c => {
           const label = c.charAt(0).toUpperCase() + c.slice(1);
           const href  = '/gallery?topic=' + encodeURIComponent(c);

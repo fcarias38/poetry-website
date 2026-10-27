@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/admin_session.php';
+admin_remember_forget();
 $_SESSION = [];
 
 // Expire the session cookie so the browser drops it too.

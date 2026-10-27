@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" data-theme-scope="site" data-theme="dark">
   <head>
-  <script src="/theme.js"></script>
+  <script src="/theme.js?v=20261027-2"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Think Room | Welcome</title>
@@ -9,7 +9,7 @@
     <!-- SEO Meta -->
     <meta
       name="description"
-      content="Think Room is my body of work — poetry, thoughts, and reflections by Freddy Carias."
+      content="Think Room is a collection of original poetry by Freddy Carias."
     />
     <meta name="author" content="Freddy Carias" />
     <meta name="robots" content="index, follow" />
@@ -19,7 +19,7 @@
     <meta property="og:title" content="Think Room | Welcome" />
     <meta
       property="og:description"
-      content="Think Room is my body of work — poetry, thoughts, and reflections by Freddy Carias."
+      content="Think Room is a collection of original poetry by Freddy Carias."
     />
     <meta
       property="og:image"
@@ -33,7 +33,7 @@
     <meta name="twitter:title" content="Think Room | Welcome" />
     <meta
       name="twitter:description"
-      content="Poetry, thoughts, and digital reflections by Freddy Carias."
+      content="Original poetry by Freddy Carias about love, loss, faith, and forgiveness."
     />
     <meta
       name="twitter:image"
@@ -47,7 +47,7 @@
         "@type": "CreativeWork",
         "name": "Think Room",
         "url": "https://freddycarias.com",
-        "description": "A poetry and reflection gallery by Freddy Carias.",
+        "description": "A collection of original poetry by Freddy Carias.",
         "author": {
           "@type": "Person",
           "name": "Freddy Carias",
@@ -210,7 +210,7 @@
         .btn-enter { padding: 0.65rem 2.2rem; font-size: 0.9rem; }
       }
     </style>
-    <link rel="stylesheet" href="/theme.css">
+    <link rel="stylesheet" href="/theme.css?v=20261027-2">
 </head>
   <body class="splash-page">
     <div class="overlay"></div>
@@ -226,9 +226,9 @@
       <p class="countdown">Entering in <span id="countNum">15</span>&thinsp;…</p>
     </div>
 
-    <footer>
-      &copy; 2025 Freddy Carias. All Rights Reserved.
-    </footer>
+    <footer class="page-footer">
+    <span>&copy; 2025 Freddy Carias &mdash; All Rights Reserved</span>
+  </footer>
 
     <script>
       let seconds = 15;

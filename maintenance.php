@@ -5,7 +5,7 @@ header('Retry-After: 3600');
 <!DOCTYPE html>
 <html lang="en" data-theme-scope="site" data-theme="dark">
   <head>
-  <script src="/theme.js"></script>
+  <script src="/theme.js?v=20261027-2"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Think Room — Back Soon</title>
@@ -102,7 +102,7 @@ header('Retry-After: 3600');
         padding: 1rem;
       }
     </style>
-    <link rel="stylesheet" href="/theme.css">
+    <link rel="stylesheet" href="/theme.css?v=20261027-2">
 </head>
   <body class="maintenance-page">
     <p class="brand">Think Room</p>
@@ -110,6 +110,8 @@ header('Retry-After: 3600');
     <p class="message">We're doing a little work behind the scenes.<br>We'll be back shortly.</p>
     <p class="sub">Down for maintenance</p>
     <p class="admin-link"><a href="/login">Admin login</a></p>
-    <footer>&copy; <?php echo date('Y'); ?> Freddy Carias. All Rights Reserved.</footer>
+    <footer class="page-footer">
+    <span>&copy; 2025 Freddy Carias &mdash; All Rights Reserved</span>
+  </footer>
   </body>
 </html>

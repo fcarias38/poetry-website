@@ -7,6 +7,7 @@ Mysql Database info.txt
 
 # Password reset tokens (contain live single-use tokens)
 reset_tokens/
+admin_tokens/
 
 # PHP error log
 error_log
