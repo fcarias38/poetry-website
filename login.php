@@ -1,30 +1,16 @@
 <?php $loginError = isset($_GET['error']); ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme-scope="admin" data-theme="light">
 <head>
+  <script src="/theme.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Think Room | Sign in</title>
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#0d0d0d">
+  <meta name="theme-color" content="#f7f4ee">
   <meta name="robots" content="noindex, nofollow">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg:        #0e0e10;
-      --panel:     #161618;
-      --surface:   #1b1b1e;
-      --surface-2: #202024;
-      --border:    rgba(255,255,255,0.09);
-      --border-2:  rgba(255,255,255,0.14);
-      --text:      #ededed;
-      --text-dim:  #9a978f;
-      --text-mute: #6b6862;
-      --accent:    #c8a96e;
-      --accent-d:  #b2965e;
-      --danger:    #e5807a;
-      --success:   #7cc98c;
-    }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body { height: 100%; }
@@ -204,6 +190,8 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="/theme.css">
 </head>
 <body>
 

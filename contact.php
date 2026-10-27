@@ -24,8 +24,9 @@ if (isset($_GET['sent'])) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme-scope="site" data-theme="dark">
 <head>
+  <script src="/theme.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contact | Think Room</title>
@@ -122,6 +123,7 @@ if (isset($_GET['sent'])) {
       .toast { top:72px; }
     }
   </style>
+  <link rel="stylesheet" href="/theme.css">
 </head>
 <body>
 <?php if ($notice): ?>

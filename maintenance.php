@@ -3,8 +3,9 @@ http_response_code(503);
 header('Retry-After: 3600');
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme-scope="site" data-theme="dark">
   <head>
+  <script src="/theme.js"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Think Room — Back Soon</title>
@@ -101,8 +102,9 @@ header('Retry-After: 3600');
         padding: 1rem;
       }
     </style>
-  </head>
-  <body>
+    <link rel="stylesheet" href="/theme.css">
+</head>
+  <body class="maintenance-page">
     <p class="brand">Think Room</p>
     <div class="divider"></div>
     <p class="message">We're doing a little work behind the scenes.<br>We'll be back shortly.</p>

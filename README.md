@@ -12,6 +12,8 @@ Think Room is a place to read, like, and comment on original poems. It includes 
 - Like and comment system per poem
 - Admin dashboard to create, edit, and delete poems
 - Secure admin login
+- Light admin workspace with category creation, renaming, and reassignment
+- Private gallery previews before publishing and optional grammar suggestions
 - Contact form with email delivery
 - SEO-optimized pages with Open Graph and JSON-LD schema
 - Responsive design via Bootstrap 5
@@ -58,6 +60,47 @@ Think Room is a place to read, like, and comment on original poems. It includes 
 ---
 
 ## Database Setup
+
+Category management creates its `poem_categories` table automatically on first use
+and imports the labels already used by poems. The database account needs `CREATE`
+permission for that first use. Open **Dashboard → Categories** to add topics, rename
+them across all poems, or remove them after moving their poems to another category.
+Empty categories remain available in the editor; public topics appear once a poem
+uses them. Names are limited to 100 characters.
+
+Categories use an editable table with poem counts. The checkmark saves a name;
+the trash icon opens removal and reassignment options.
+
+The theme switch saves separate browser preferences for the admin workspace and
+the public website. Admin defaults to light, and the public site defaults to dark.
+The preference applies across pages and open tabs for each side independently.
+
+Apache error responses use the static `error.html` page, including `/502`. Deploy
+that file together with `.htaccess`, `theme.css`, and `theme.js`. The fallback
+does not require PHP or a database. Missing clean URLs only rewrite to `.shtml`
+when the target exists, preventing repeated rewrites. Errors generated before
+the request reaches this site's Apache configuration (for example, a hosting
+proxy failure) require the host's own error-page configuration.
+
+In **New Poem**, **Preview on site** opens the real gallery layout in a private tab
+without saving a poem. The preview requires an admin session and a CSRF token,
+uses POST rather than placing draft text in URLs, and sends no-cache/no-index
+headers. **Save poem** still publishes immediately; preview is optional.
+
+The editor enables browser spellcheck. **Check with LanguageTool** sends the poem
+body to LanguageTool only when clicked, using its public proofreading API. It
+needs an internet connection and is subject to service availability and free
+request limits. The editor explains the text sharing and links to its privacy
+policy. Suggestions never change a poem unless selected. Line breaks are preserved.
+
+Verification: `node tests/admin-writing.test.cjs` checks writing interactions.
+`node tests/theme.test.cjs` checks defaults, persistence, and separate preferences.
+`node tests/http-routing.test.cjs` checks error handling with an isolated Apache
+server (Windows/XAMPP default, overridable with `TEST_APACHE_ROOT`).
+`node tests/categories.integration.cjs` runs category and private-preview checks
+using disposable local PHP/MariaDB instances, with Windows/XAMPP defaults. Set
+`TEST_PHP` and `TEST_MYSQL_BIN` to override their executable paths. The integration
+test does not use the site's database credentials or data.
 
 Run the following SQL to set up the required tables:
 

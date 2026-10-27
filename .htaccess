@@ -1,5 +1,32 @@
 RewriteEngine On
 
+# Static error handling remains available when PHP or the database fails.
+ErrorDocument 400 /error.html
+ErrorDocument 403 /error.html
+ErrorDocument 404 /error.html
+ErrorDocument 405 /error.html
+ErrorDocument 408 /error.html
+ErrorDocument 429 /error.html
+ErrorDocument 500 /error.html
+ErrorDocument 502 /error.html
+ErrorDocument 503 /error.html
+ErrorDocument 504 /error.html
+
+# Never rewrite the error document, including during maintenance.
+RewriteRule ^error\.html$ - [L]
+
+# Friendly direct error URLs also retain the corresponding HTTP status.
+RewriteRule ^400/?$ - [R=400,L]
+RewriteRule ^403/?$ - [R=403,L]
+RewriteRule ^404/?$ - [R=404,L]
+RewriteRule ^405/?$ - [R=405,L]
+RewriteRule ^408/?$ - [R=408,L]
+RewriteRule ^429/?$ - [R=429,L]
+RewriteRule ^500/?$ - [R=500,L]
+RewriteRule ^502/?$ - [R=502,L]
+RewriteRule ^503/?$ - [R=503,L]
+RewriteRule ^504/?$ - [R=504,L]
+
 # ── Force HTTPS and non-www ──
 RewriteCond %{HTTPS} off [OR]
 RewriteCond %{HTTP_HOST} ^www\.freddycarias\.com [NC]
@@ -28,7 +55,7 @@ AddHandler server-parsed .shtml
 Options +Includes
 
 # ── Block sensitive files ──
-<FilesMatch "^(config|admin_config|admin_config\.example|config\.example|admin_auth|maintenance_check)\.php$">
+<FilesMatch "^(config|admin_config|admin_config\.example|config\.example|admin_auth|maintenance_check|categories)\.php$">
     Require all denied
 </FilesMatch>
 
@@ -48,7 +75,7 @@ RewriteRule ^reset_tokens/ - [F,L]
 # ── Clean URLs: hide .php extension ──
 # Redirect direct .php requests to clean URLs (except config files)
 RewriteCond %{THE_REQUEST} \s/([^.]+)\.php[?\s] [NC]
-RewriteCond %1 !^(config|admin_config|admin_login|maintenance_check|save_work|save_comment|update_likes|get_poems|get_poem_by_id|get_poem_public|get_likes_comments|delete_poem|edit_poem|all_poems|send_contact|logout|toggle_maintenance|track_share|track_view|get_analytics|get_pending_comments|moderate_comment|reset_request|reset_password|forgot_password)$ [NC]
+RewriteCond %1 !^(config|admin_config|admin_login|maintenance_check|save_work|save_comment|update_likes|get_poems|get_poem_by_id|get_poem_public|get_likes_comments|delete_poem|edit_poem|all_poems|send_contact|logout|toggle_maintenance|track_share|track_view|get_analytics|get_pending_comments|moderate_comment|reset_request|reset_password|forgot_password|manage_categories|preview_poem|categories)$ [NC]
 RewriteRule ^([^.]+)\.php$ /$1 [R=301,L]
 
 # ── Redirect .shtml to clean URLs ──
@@ -78,4 +105,5 @@ RewriteRule ^(login|dashboard|logout|admin_login|toggle_maintenance|forgot_passw
 # ── Extensionless .shtml fallback ──
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.shtml -f
 RewriteRule ^([^/]+)$ $1.shtml [L]
