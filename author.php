@@ -7,7 +7,7 @@ $supportToken = csrf_token();
 <!DOCTYPE html>
 <html lang="en" data-theme-scope="site" data-theme="dark">
 <head>
-  <script src="/theme.js?v=20261027-2"></script>
+  <script src="/theme.js?v=20261027-4"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>About the Author | Think Room</title>
@@ -84,7 +84,7 @@ $supportToken = csrf_token();
       .page-footer span { display:block; }
     }
   </style>
-  <link rel="stylesheet" href="/theme.css?v=20261027-2">
+  <link rel="stylesheet" href="/theme.css?v=20261027-4">
 </head>
 <body>
   <nav class="topnav">

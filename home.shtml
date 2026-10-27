@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" data-theme-scope="site" data-theme="dark">
   <head>
-  <script src="/theme.js?v=20261027-2"></script>
+  <script src="/theme.js?v=20261027-4"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Think Room – A Poetry Gallery by Freddy Carias</title>
@@ -497,6 +497,8 @@
         opacity: 0.5;
         margin: 0 0 1.8rem;
       }
+      #readerComments[hidden] { display:none; }
+      .reader-body:has(#readerComments[hidden]) .reader-poem { margin-bottom:0; }
 
       .comments-label {
         font-size: 0.6rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
@@ -685,7 +687,7 @@
       .draft-preview-reader #commentsList, .draft-preview-reader #commentForm,
       .draft-preview-reader .reader-actions { display: none !important; }
     </style>
-    <link rel="stylesheet" href="/theme.css?v=20261027-2">
+    <link rel="stylesheet" href="/theme.css?v=20261027-4">
 </head>
   <body>
 
@@ -748,9 +750,11 @@
         </div>
         <div class="reader-body">
           <pre class="reader-poem" id="readerBody"></pre>
-          <div class="reader-divider"></div>
-          <p class="comments-label">Comments</p>
-          <div id="commentsList"></div>
+          <section id="readerComments" aria-labelledby="readerCommentsHeading" hidden>
+            <div class="reader-divider"></div>
+            <p class="comments-label" id="readerCommentsHeading">Comments</p>
+            <div id="commentsList"></div>
+          </section>
           <p id="readerFeedback" role="status" aria-live="polite"></p>
           <div class="comment-form" id="commentForm">
             <input type="text" id="commentName" placeholder="Your name (optional)" />
@@ -837,6 +841,7 @@
         document.getElementById("commentInput").value           = "";
         document.getElementById("commentName").value            = "";
         document.getElementById("commentsList").innerHTML        = "";
+        document.getElementById("readerComments").hidden = true;
         document.getElementById("copyConfirm").classList.remove("show");
         document.getElementById("copyLinkBtn").classList.remove("copied");
         document.getElementById("likeBtn").classList.remove("liked");
@@ -877,8 +882,8 @@
       function displayComments(comments) {
         const list = document.getElementById("commentsList");
         list.innerHTML = "";
+        document.getElementById("readerComments").hidden = comments.length === 0;
         if (!comments.length) {
-          list.innerHTML = '<p class="comment-empty">No comments yet — be the first.</p>';
           return;
         }
         comments.forEach(c => {

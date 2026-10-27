@@ -32,7 +32,7 @@ async function freePort() {
     const database = spawn(path.join(mysqlBin, 'mysqld.exe'), [`--defaults-file=${path.join(dbDir, 'my.ini')}`, '--console', '--bind-address=127.0.0.1'], { windowsHide: true, stdio: 'ignore' });
     children.push(database);
     fs.mkdirSync(siteDir);
-    for (const file of ['categories.php', 'manage_categories.php', 'save_work.php', 'get_poems.php', 'csrf.php', 'admin_session.php', 'preview_poem.php', 'home.shtml']) fs.copyFileSync(path.join(root, file), path.join(siteDir, file));
+    for (const file of ['categories.php', 'manage_categories.php', 'save_work.php', 'get_poems.php', 'csrf.php', 'admin_session.php', 'maintenance_check.php', 'poem.php', 'preview_poem.php', 'home.shtml', 'theme.css', 'theme.js']) fs.copyFileSync(path.join(root, file), path.join(siteDir, file));
     fs.writeFileSync(path.join(siteDir, 'admin_config.php'), '<?php // Isolated test credentials.');
     fs.writeFileSync(path.join(siteDir, 'config.php'), `<?php
       mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
@@ -51,7 +51,7 @@ async function freePort() {
         body TEXT, archived TINYINT DEFAULT 0, slug VARCHAR(255), likes INT DEFAULT 0,
         meta_description TEXT, meta_keywords TEXT
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
-      $conn->query("CREATE TABLE IF NOT EXISTS comments (id INT AUTO_INCREMENT PRIMARY KEY, poem_id INT, approved TINYINT DEFAULT 0)");
+      $conn->query("CREATE TABLE IF NOT EXISTS comments (id INT AUTO_INCREMENT PRIMARY KEY, poem_id INT, approved TINYINT DEFAULT 0, name VARCHAR(255) DEFAULT '', comment VARCHAR(1000) DEFAULT '', created_at DATETIME DEFAULT CURRENT_TIMESTAMP)");
       if (isset($_GET['seed'])) {
         $conn->query("INSERT INTO poems (title, category, body, archived) VALUES
           ('First', 'God', 'First poem', 0), ('Second', 'God', 'Second poem', 1), ('Third', 'Love', 'Third poem', 0)");
@@ -80,6 +80,54 @@ async function freePort() {
     assert.equal(Number(galleryPoems.find(p => p.title === 'First').likes), 8, 'Gallery API includes likes');
     assert.equal(Number(galleryPoems.find(p => p.title === 'First').comment_count), 2, 'Gallery counts approved comments only');
     assert.equal(Number(galleryPoems.find(p => p.title === 'Third').comment_count), 0, 'Poems without comments retain zero counts');
+    fs.mkdirSync(path.join(siteDir, 'poems'));
+    for (const [id, hasComments] of [[1, true], [3, false]]) {
+      const response = await fetch(base + 'poem.php?id=' + id);
+      assert.equal(response.status, 200, 'Poem page renders');
+      const html = await response.text();
+      assert.ok(!html.includes('Fatal error'), 'Poem page has no PHP error');
+      const section = html.match(/<div id="commentsSection"[^>]*>/)[0];
+      assert.equal(section.includes(' hidden'), !hasComments, 'Only existing comments show their section initially');
+      assert.ok(html.includes('id="commentToggle"'), 'First-comment action remains available');
+      const navigationChecks = `<script>document.addEventListener('DOMContentLoaded', async () => {
+        try {
+          for(let i=0; i<30 && document.querySelectorAll('#topicsMenu a').length<3; i++) await new Promise(r=>setTimeout(r,100));
+          const nav=document.querySelector('.topnav'), trigger=document.getElementById('topicsTrigger'), hamburger=document.getElementById('hamburger'), mobile=document.getElementById('mobileMenu');
+          if(!nav.querySelector('a[href="/author"]') || !nav.querySelector('a[href="/contact"]')) throw Error('Full navigation missing');
+          if(document.querySelectorAll('#topicsMenu a').length!==3) throw Error('Topics must load from root endpoint on a nested poem URL');
+          if(getComputedStyle(nav).position!=='sticky' || nav.getBoundingClientRect().height<62) throw Error('Sticky header dimensions');
+          if(innerWidth<=640){
+            const menuRect=hamburger.getBoundingClientRect(),themeRect=document.querySelector('.theme-toggle').getBoundingClientRect();
+            if(menuRect.width<48 || menuRect.height<44 || menuRect.left-themeRect.right<16) throw Error('Mobile menu touch area');
+            if(getComputedStyle(nav.querySelector('.topnav-links')).display!=='none') throw Error('Desktop links must collapse on mobile');
+            hamburger.click(); if(!mobile.classList.contains('open') || hamburger.getAttribute('aria-expanded')!=='true') throw Error('Mobile menu does not open');
+            document.querySelector('.mobile-topics summary').click(); if(document.querySelectorAll('#mobileTopics a').length!==3) throw Error('Mobile topic links missing');
+            document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true})); if(mobile.classList.contains('open')) throw Error('Escape does not close mobile menu');
+          }else{
+            if(getComputedStyle(nav.querySelector('.topnav-links')).display==='none') throw Error('Desktop menu hidden');
+            trigger.click(); if(trigger.getAttribute('aria-expanded')!=='true') throw Error('Desktop Topics does not open');
+            document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true})); if(trigger.getAttribute('aria-expanded')!=='false') throw Error('Desktop Topics does not close');
+          }
+          const section=document.getElementById('commentsSection'),initiallyHidden=section.hidden;
+          document.getElementById('commentToggle').click(); if(section.hidden===initiallyHidden) throw Error('Comment section does not toggle');
+          document.getElementById('commentToggle').click();
+          let called=''; window.fetch=async url=>{called=url;return {json:async()=>({likes:9,success:true})};};
+          likePoem(); if(called!=='/update_likes.php') throw Error('Like URL must be rooted');
+          document.getElementById('commentText').value='Test'; postComment(); if(called!=='/save_comment.php') throw Error('Comment URL must be rooted');
+          if(document.documentElement.scrollWidth>innerWidth) throw Error('Poem page overflow');
+          document.documentElement.dataset.navigationCheck='PASS';
+        }catch(error){document.documentElement.dataset.navigationCheck=error.message;}
+      });</script>`;
+      fs.writeFileSync(path.join(siteDir, 'poems', 'navigation-' + id + '.html'), html.replace('</body>', navigationChecks + '</body>'));
+      for (const width of [1440, 520]) {
+        const browser = spawn(process.env.TEST_CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe', ['--headless', '--disable-gpu', '--no-first-run', '--no-default-browser-check', '--user-data-dir=' + path.join(temp, 'poem-browser-' + id + '-' + width), '--window-size=' + width + ',1000', '--virtual-time-budget=5000', '--dump-dom', base + 'poems/navigation-' + id + '.html'], { windowsHide: true });
+        let output=''; browser.stdout.on('data', data=>{output+=data;}); browser.stderr.resume();
+        const status=await new Promise((resolve,reject)=>{browser.once('error',reject);browser.once('exit',resolve);});
+        assert.equal(status,0,'Poem navigation browser exits cleanly');
+        assert.ok(output.includes('data-navigation-check="PASS"'), 'Poem '+id+' at '+width+'px: '+(output.match(/data-navigation-check="([^"]*)"/)?.[1]||'No browser check result'));
+      }
+    }
+    console.log('PASS: rendered poem pages retain full desktop/mobile navigation, nested topic and action URLs, larger menu targets and empty-comment behavior.');
     const headers = { Cookie: cookie, 'X-CSRF-Token': token, 'Content-Type': 'application/json' };
     const request = async (data, override = {}) => {
       const response = await fetch(base + 'manage_categories.php', data === undefined

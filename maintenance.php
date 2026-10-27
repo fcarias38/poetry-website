@@ -5,7 +5,7 @@ header('Retry-After: 3600');
 <!DOCTYPE html>
 <html lang="en" data-theme-scope="site" data-theme="dark">
   <head>
-  <script src="/theme.js?v=20261027-2"></script>
+  <script src="/theme.js?v=20261027-4"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Think Room — Back Soon</title>
@@ -102,7 +102,7 @@ header('Retry-After: 3600');
         padding: 1rem;
       }
     </style>
-    <link rel="stylesheet" href="/theme.css?v=20261027-2">
+    <link rel="stylesheet" href="/theme.css?v=20261027-4">
 </head>
   <body class="maintenance-page">
     <p class="brand">Think Room</p>

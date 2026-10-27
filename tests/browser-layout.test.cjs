@@ -20,7 +20,8 @@ const server = http.createServer((request, response) => {
   const pathname = new URL(request.url, 'http://localhost').pathname;
   const approvedComments = [{ name: '<img src=x onerror=alert(1)>', comment: '<script>unsafe</script>', created_at: '2026-10-27 10:00:00' }, { name: 'Reader', comment: 'Beautiful poem.', created_at: '2026-10-27 09:00:00' }];
   if (pathname === '/get_likes_comments.php') {
-    response.setHeader('Content-Type', 'application/json'); response.end(JSON.stringify({ likes: 8, comments: approvedComments })); return;
+    const empty = new URL(request.url, 'http://localhost').searchParams.get('id') === '3';
+    response.setHeader('Content-Type', 'application/json'); response.end(JSON.stringify({ likes: 8, comments: empty ? [] : approvedComments })); return;
   }
   if (['/update_likes.php', '/save_comment.php', '/track_view.php', '/track_share.php'].includes(pathname)) {
     let raw = ''; request.on('data', data => { raw += data; }); request.on('end', () => {
@@ -30,7 +31,7 @@ const server = http.createServer((request, response) => {
       if ((pathname === '/update_likes.php' && body.id === 2) || (pathname === '/save_comment.php' && body.comment === 'fail')) {
         response.writeHead(503); response.end(JSON.stringify({ error: 'Please try again later.' })); return;
       }
-      response.end(JSON.stringify(pathname === '/update_likes.php' ? { likes: 9 } : { success: true, pending: true, comments: approvedComments }));
+      response.end(JSON.stringify(pathname === '/update_likes.php' ? { likes: 9 } : { success: true, pending: true, comments: body.id === 3 ? [] : approvedComments }));
     }); return;
   }
   const fixtures = {
@@ -55,6 +56,7 @@ const server = http.createServer((request, response) => {
       try {
         if(document.documentElement.dataset.theme !== 'light') throw Error('Admin default');
         const toggle = document.querySelector('.theme-toggle'); toggle.click();
+        if(toggle.textContent.trim()) throw Error('Theme button must be icon-only');
         if(document.documentElement.dataset.theme !== 'dark' || localStorage.getItem('tr_theme_admin') !== 'dark') throw Error('Admin dark toggle');
         toggle.click(); showPanel('categories'); await loadCategories();
         if(document.querySelectorAll('.category-table tbody tr').length !== 3) throw Error('Category rows');
@@ -107,6 +109,7 @@ const server = http.createServer((request, response) => {
           if(document.getElementById('likeCount').textContent !== '9') throw Error('Reader like count not synchronized');
           if(document.activeElement.id !== 'commentInput') throw Error('Comment input focus');
           if(document.querySelector('#commentsList img, #commentsList script')) throw Error('Comment text must not execute HTML');
+          if(document.getElementById('readerComments').hidden) throw Error('Existing comments must remain visible');
           const comment = document.getElementById('commentInput');
           comment.value = 'fail'; await GalleryActions.postComment();
           if(comment.value !== 'fail' || !document.getElementById('readerFeedback').textContent.includes('try again')) throw Error('Failed comment lost draft');
@@ -116,6 +119,16 @@ const server = http.createServer((request, response) => {
           document.dispatchEvent(new KeyboardEvent('keydown', { key:'Escape', bubbles:true }));
           if(document.getElementById('readerOverlay').classList.contains('open') || location.href !== initialUrl) throw Error('Close must return to gallery');
           if(document.activeElement !== card.querySelector('.card-comment')) throw Error('Return focus after comment');
+          openPoem(cards[2]); await new Promise(resolve => setTimeout(resolve, 150));
+          const emptyThread = document.getElementById('readerComments');
+          if(!emptyThread.hidden || emptyThread.getBoundingClientRect().height !== 0) throw Error('Empty comments must occupy no space');
+          if(document.getElementById('commentsList').childElementCount) throw Error('No empty comment placeholder');
+          if(getComputedStyle(document.getElementById('commentForm')).display !== 'none') throw Error('Empty comment form opens only on request');
+          openCommentForm();
+          if(getComputedStyle(document.getElementById('commentForm')).display === 'none') throw Error('First comment form unavailable');
+          document.getElementById('commentInput').value = 'First comment'; await GalleryActions.postComment();
+          if(!emptyThread.hidden) throw Error('Pending first comment must not show empty thread');
+          closeReader();
           Object.defineProperty(navigator, 'share', { configurable:true, value:undefined });
           Object.defineProperty(navigator, 'clipboard', { configurable:true, value:{ writeText:async value => { window.testCopiedLink = value; } } });
           card.querySelector('.card-share').click(); await new Promise(resolve => setTimeout(resolve, 100));
@@ -137,9 +150,15 @@ const server = http.createServer((request, response) => {
         await new Promise(resolve => setTimeout(resolve, 200));
         const icon = document.querySelector('.theme-toggle-icon svg');
         if(!icon || Math.abs(icon.getBoundingClientRect().width - 19.2) > 1) throw Error('Theme icon sizing');
+        if(document.querySelector('.theme-toggle').textContent.trim()) throw Error('Theme button must be icon-only');
         const footerStyle = getComputedStyle(document.querySelector('.page-footer'));
         if(footerStyle.textAlign !== 'center' || footerStyle.justifyContent !== 'center') throw Error('Footer alignment');
         if(innerWidth <= 640) {
+          const menuRect = document.getElementById('hamburger').getBoundingClientRect();
+          const themeRect = document.querySelector('.theme-toggle').getBoundingClientRect();
+          if(menuRect.width < 48 || menuRect.height < 44) throw Error('Menu touch target');
+          if(themeRect.width < 44 || themeRect.height < 44) throw Error('Theme touch target');
+          if(menuRect.left - themeRect.right < 16) throw Error('Menu and theme need separate touch areas');
           document.getElementById('hamburger').click();
           const topics = document.querySelector('.mobile-topics');
           if(topics.open) throw Error('Topics must start collapsed');
