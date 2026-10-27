@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $valid) {
 <!DOCTYPE html>
 <html lang="en" data-theme-scope="admin" data-theme="light">
 <head>
-  <script src="/theme.js?v=20261027-2"></script>
+  <script src="/theme.js?v=20261027-4"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Think Room | Reset Password</title>
@@ -172,7 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $valid) {
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="admin.css">
-  <link rel="stylesheet" href="/theme.css?v=20261027-2">
+  <link rel="stylesheet" href="/theme.css?v=20261027-4">
 </head>
 <body class="reset-page">
 <div class="overlay"></div>

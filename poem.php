@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en" data-theme-scope="site" data-theme="dark">
   <head>
-  <script src="/theme.js?v=20261027-2"></script>
+  <script src="/theme.js?v=20261027-4"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -121,12 +121,12 @@
 
       /* ── Nav ── */
       .topnav {
-        position: sticky; top: 0; z-index: 100;
+        position: sticky; top: 0; z-index: 200;
         background: rgba(22,22,24,0.92);
         backdrop-filter: blur(10px);
         border-bottom: 1px solid var(--border);
         display: flex; align-items: center; justify-content: space-between;
-        padding: 0 2.5rem; height: 60px;
+        padding: 0 2.5rem; height: 62px;
       }
       .topnav-brand {
         font-family: "Cormorant Garamond", serif;
@@ -142,13 +142,25 @@
         font-family: "Cormorant Garamond", serif; font-weight: 600;
         font-size: 1.1rem; color: #1a1408; font-style: italic; flex-shrink: 0;
       }
-      .topnav-back {
-        font-size: 0.64rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
-        color: var(--text-dim); text-decoration: none;
-        display: flex; align-items: center; gap: 0.4rem;
-        transition: color 0.2s;
-      }
-      .topnav-back:hover { color: var(--accent); }
+    .topnav-links { display:flex; align-items:center; gap:2rem; list-style:none; }
+    .topnav-links a { text-decoration:none; color:var(--text-dim); font-size:0.72rem; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; transition:color 0.2s; }
+    .topnav-links a:hover { color:var(--accent); }
+    /* ── Topics dropdown ── */
+    .topics-dd { position:relative; }
+    .topics-trigger { display:inline-flex; align-items:center; gap:0.35rem; background:none; border:none; color:var(--text-dim); font-family:"Inter",sans-serif; font-size:0.72rem; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; cursor:pointer; transition:color 0.2s; }
+    .topics-trigger:hover, .topics-dd.open .topics-trigger { color:var(--accent); }
+    .topics-trigger .chev { font-size:0.7rem; transition:transform 0.2s; }
+    .topics-dd.open .topics-trigger .chev { transform:rotate(180deg); }
+    .topics-menu { position:absolute; top:calc(100% + 0.8rem); right:0; min-width:180px; background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:0.4rem; box-shadow:0 12px 30px rgba(0,0,0,0.45); opacity:0; visibility:hidden; transform:translateY(-6px); transition:opacity 0.18s, transform 0.18s, visibility 0.18s; z-index:300; max-height:60vh; overflow-y:auto; }
+    .topics-dd.open .topics-menu { opacity:1; visibility:visible; transform:translateY(0); }
+    .topics-menu a { display:block; padding:0.55rem 0.8rem; border-radius:7px; color:var(--text-dim); font-size:0.74rem; letter-spacing:0.08em; text-transform:none; text-decoration:none; transition:background 0.15s, color 0.15s; }
+    .topics-menu a:hover { background:var(--surface-2); color:var(--text); }
+    .topnav-links a:hover, .topnav-links a.active { color:var(--accent); }
+    .topnav-hamburger { display:none; background:none; border:none; color:var(--text-dim); font-size:1.4rem; cursor:pointer; }
+    .mobile-menu { display:none; background:var(--panel); border-bottom:1px solid var(--border); flex-direction:column; padding:0.5rem 1.4rem 1rem; position:sticky; top:62px; z-index:199; }
+    .mobile-menu.open { display:flex; }
+    .mobile-menu a { color:var(--text-dim); text-decoration:none; font-size:0.72rem; font-weight:500; letter-spacing:0.12em; text-transform:uppercase; padding:0.8rem 0; border-bottom:1px solid var(--border); }
+    .mobile-menu a:last-child { border-bottom:none; }
 
       /* ── Layout ── */
       .page {
@@ -192,9 +204,8 @@
       .poem-actions {
         display: flex; align-items: center;
         gap: 0.5rem; flex-wrap: wrap;
-        padding-bottom: 2rem;
-        border-bottom: 1px solid var(--border);
-        margin-bottom: 3rem;
+        padding-bottom: 0;
+        margin-bottom: 0;
       }
       .act-btn {
         background: var(--surface);
@@ -246,6 +257,9 @@
         transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.3s ease;
         margin-top: 0;
       }
+      .comments-section { margin-top: 2rem; }
+      .comments-section[hidden] { display: none; }
+      .comment-form:first-child { margin-top: 0; }
       .comments-panel.open {
         max-height: 4000px; opacity: 1; margin-top: 0.5rem;
       }
@@ -378,18 +392,82 @@
 
       @media (max-width: 640px) {
         .topnav { padding: 0 1.2rem; }
+        .topnav-links { display:none; }
+        .topnav-hamburger { display:block; }
         .page { padding: 2.5rem 1.2rem 4rem; }
         .read-next-grid { grid-template-columns: 1fr; }
       }
     </style>
-    <link rel="stylesheet" href="/theme.css?v=20261027-2">
+    <link rel="stylesheet" href="/theme.css?v=20261027-4">
 </head>
   <body>
 
-    <nav class="topnav">
-      <a href="/" class="topnav-brand"><span class="brand-mark">T</span>Think Room</a>
-      <a href="/" class="topnav-back"><i class="bi bi-arrow-left"></i> Home</a>
-    </nav>
+  <nav class="topnav" aria-label="Main navigation">
+    <a href="/" class="topnav-brand"><span class="brand-mark">T</span>Think Room</a>
+    <ul class="topnav-links">
+      <li class="topics-dd" id="topicsDd">
+        <button class="topics-trigger" id="topicsTrigger" aria-expanded="false" aria-controls="topicsMenu">Topics <i class="bi bi-chevron-down chev"></i></button>
+        <div class="topics-menu" id="topicsMenu"></div>
+      </li>
+      <li><a href="/author">Author</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+    <button class="topnav-hamburger" id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu"><i class="bi bi-list"></i></button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <details class="mobile-topics">
+      <summary>Topics</summary>
+      <div id="mobileTopics"></div>
+    </details>
+    <a href="/author">Author</a>
+    <a href="/contact">Contact</a>
+  </div>
+
+    <script>
+      (() => {
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const dropdown = document.getElementById('topicsDd');
+        const trigger = document.getElementById('topicsTrigger');
+        const topics = document.getElementById('topicsMenu');
+        const mobileTopics = document.getElementById('mobileTopics');
+        const setMobileOpen = open => {
+          mobileMenu.classList.toggle('open', open);
+          hamburger.setAttribute('aria-expanded', String(open));
+        };
+        const setTopicsOpen = open => {
+          dropdown.classList.toggle('open', open);
+          trigger.setAttribute('aria-expanded', String(open));
+        };
+        hamburger.addEventListener('click', () => setMobileOpen(!mobileMenu.classList.contains('open')));
+        trigger.addEventListener('click', () => setTopicsOpen(!dropdown.classList.contains('open')));
+        document.addEventListener('click', event => {
+          if (!dropdown.contains(event.target)) setTopicsOpen(false);
+        });
+        document.addEventListener('keydown', event => {
+          if (event.key !== 'Escape') return;
+          if (mobileMenu.classList.contains('open')) { setMobileOpen(false); hamburger.focus(); }
+          if (dropdown.classList.contains('open')) { setTopicsOpen(false); trigger.focus(); }
+        });
+        function renderTopics(poems) {
+          const categories = [...new Set(poems.map(poem => poem.category).filter(category => typeof category === 'string' && category.trim()))];
+          topics.replaceChildren();
+          mobileTopics.replaceChildren();
+          for (const [label, href] of [['All poems', '/gallery'], ...categories.map(category => [category.charAt(0).toUpperCase() + category.slice(1), '/gallery?topic=' + encodeURIComponent(category)])]) {
+            for (const parent of [topics, mobileTopics]) {
+              const link = document.createElement('a');
+              link.textContent = label; link.href = href;
+              parent.appendChild(link);
+            }
+          }
+        }
+        renderTopics([]);
+        fetch('/get_poems.php').then(response => {
+          if (!response.ok) throw Error('Topics unavailable');
+          return response.json();
+        }).then(poems => { if (Array.isArray(poems)) renderTopics(poems); }).catch(() => {});
+      })();
+    </script>
 
     <?php if (!$poem): ?>
     <div class="not-found">
@@ -474,7 +552,7 @@
       }
       ?>
 
-      <div class="comments-section">
+      <div id="commentsSection" class="comments-section"<?= $cCount === 0 ? ' hidden' : '' ?>>
         <!-- Toggle lives inline in the actions row above. Thread + form show here.
              Expanded by default when comments exist so the discussion is visible. -->
         <div id="commentsPanel" class="comments-panel<?= $cCount > 0 ? ' open' : '' ?>">
@@ -532,20 +610,20 @@
       const POEM_URL   = "<?= $canonicalUrl ?>";
 
       // ── Native view tracking (fire-and-forget) ──
-      fetch("track_view.php", {
+      fetch("/track_view.php", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: POEM_ID })
       }).catch(() => {});
 
       function trackShare() {
-        fetch("track_share.php", {
+        fetch("/track_share.php", {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id: POEM_ID })
         }).catch(() => {});
       }
 
       function likePoem() {
-        fetch("update_likes.php", {
+        fetch("/update_likes.php", {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id: POEM_ID })
         }).then(r => r.json()).then(data => {
@@ -599,14 +677,16 @@
         const panel  = document.getElementById("commentsPanel");
         const toggle = document.getElementById("commentToggle");
         const open   = panel.classList.toggle("open");
+        document.getElementById("commentsSection").hidden = !open;
         toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        if (open) document.getElementById("commentText").focus();
       }
 
       function postComment() {
         const name    = document.getElementById("commentName").value.trim();
         const comment = document.getElementById("commentText").value.trim();
         if (!comment) return;
-        fetch("save_comment.php", {
+        fetch("/save_comment.php", {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id: POEM_ID, comment, name })
         }).then(r => r.json()).then(data => {
