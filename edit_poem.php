@@ -6,6 +6,7 @@ if (!isset($_SESSION['logged_in'])) {
 }
 
 include 'config.php';
+require 'categories.php';
 
 /**
  * Convert a title to a URL-safe slug.
@@ -64,6 +65,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title']);
     $category = trim($_POST['category']);
     $body = trim($_POST['body']);
+    try {
+        $category = category_register($conn, $category);
+    } catch (Throwable $error) {
+        http_response_code($error instanceof InvalidArgumentException ? 422 : 500);
+        echo htmlspecialchars($error instanceof InvalidArgumentException ? $error->getMessage() : 'Could not save the category. Please try again.');
+        exit;
+    }
 
     $slug = uniqueSlug($conn, makeSlug($title), $id);
 
@@ -80,13 +88,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme-scope="admin" data-theme="light">
 <head>
-    <title>Edit Poem</title>
+  <script src="/theme.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Think Room | Edit Poem</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="/theme.css">
 </head>
-<body class="bg-dark text-light">
+<body class="editor-page">
 <div class="container py-5">
+    <a href="dashboard.php" class="link-secondary">&larr; Back to dashboard</a>
     <h1>Edit Poem</h1>
     <?php if (isset($_GET['saved'])): ?>
         <p class="alert alert-success" role="status">Poem updated.</p>
@@ -94,18 +110,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="POST">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES) ?>">
         <div class="mb-3">
-            <label>Title</label>
-            <input class="form-control bg-dark text-light" name="title" value="<?= htmlspecialchars($poem['title']) ?>" required>
+            <label for="edit-title">Title</label>
+            <input id="edit-title" class="form-control" name="title" value="<?= htmlspecialchars($poem['title']) ?>" required>
         </div>
         <div class="mb-3">
-            <label>Category</label>
-            <input class="form-control bg-dark text-light" name="category" value="<?= htmlspecialchars($poem['category']) ?>" required>
+            <label for="edit-category">Category</label>
+            <input id="edit-category" class="form-control" name="category" maxlength="100" value="<?= htmlspecialchars($poem['category']) ?>" required>
         </div>
         <div class="mb-3">
-            <label>Body</label>
-            <textarea class="form-control bg-dark text-light" name="body" rows="10" required><?= htmlspecialchars($poem['body']) ?></textarea>
+            <label for="edit-body">Body</label>
+            <textarea id="edit-body" class="form-control" name="body" rows="10" required><?= htmlspecialchars($poem['body']) ?></textarea>
         </div>
-        <button class="btn btn-outline-light">Update</button>
+        <button class="btn btn-primary">Update poem</button>
         <a href="dashboard.php" class="btn btn-outline-secondary">Cancel</a>
     </form>
 </div>

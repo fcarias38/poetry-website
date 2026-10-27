@@ -1,7 +1,8 @@
 <?php include 'maintenance_check.php'; ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme-scope="site" data-theme="dark">
   <head>
+  <script src="/theme.js"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -381,7 +382,8 @@
         .read-next-grid { grid-template-columns: 1fr; }
       }
     </style>
-  </head>
+    <link rel="stylesheet" href="/theme.css">
+</head>
   <body>
 
     <nav class="topnav">

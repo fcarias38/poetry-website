@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme-scope="site" data-theme="dark">
   <head>
+  <script src="/theme.js"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Think Room – A Poetry Gallery by Freddy Carias</title>
@@ -661,8 +662,15 @@
 
         .modal-box { padding: 1.8rem 1.4rem; }
       }
+      .draft-preview-banner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 2rem; background: #f4ead6; color: #513d1e; font-size: 0.82rem; line-height: 1.6; flex-wrap: wrap; }
+      .draft-preview-banner button { border: 1px solid #a58854; border-radius: 7px; padding: 0.5rem 0.9rem; background: #fffaf0; color: #513d1e; cursor: pointer; font: inherit; }
+      .draft-preview-card { outline: 2px solid var(--accent); outline-offset: 3px; }
+      .draft-preview-reader .reader-divider, .draft-preview-reader .comments-label,
+      .draft-preview-reader #commentsList, .draft-preview-reader #commentForm,
+      .draft-preview-reader .reader-actions { display: none !important; }
     </style>
-  </head>
+    <link rel="stylesheet" href="/theme.css">
+</head>
   <body>
 
     <!-- Top nav -->
@@ -789,6 +797,7 @@
       }
 
       function resetReader() {
+        document.getElementById('readerOverlay').classList.remove('draft-preview-reader');
         document.getElementById("commentForm").style.display    = "none";
         document.getElementById("commentInput").value           = "";
         document.getElementById("commentName").value            = "";
@@ -932,13 +941,20 @@
 
       // ── Load poems ──
       function loadPoems() {
-        fetch("get_poems.php").then(r => r.json()).then(data => {
+        return fetch("get_poems.php").then(r => {
+          if (!r.ok) throw new Error('Could not load the gallery.');
+          return r.json();
+        }).catch(error => {
+          if (window.THINK_ROOM_PREVIEW) return [];
+          throw error;
+        }).then(data => {
           const masonry   = document.getElementById("poems");
           const filterBar = document.getElementById("filterBar");
           masonry.innerHTML = "";
           filterBar.innerHTML = "";
           const cats = new Set();
 
+          if (window.THINK_ROOM_PREVIEW) data.unshift(window.THINK_ROOM_PREVIEW);
           data.forEach((poem, i) => {
             if (poem.archived == 1) return; // hide retired poems from the public gallery
             cats.add(poem.category);
@@ -950,13 +966,22 @@
             const len = 150; // uniform snippet length for even-looking cards
             card.innerHTML = `
               <div class="card-inner">
-                <div class="card-category">${poem.category || "verse"}</div>
-                <h2 class="card-title">${poem.title}</h2>
-                <p class="card-snippet">${poem.body.substring(0, len)}&hellip;</p>
+                <div class="card-category"></div>
+                <h2 class="card-title"></h2>
+                <p class="card-snippet"></p>
                 <div class="card-footer">
                   <span class="card-read">Read <i class="bi bi-arrow-right"></i></span>
                 </div>
               </div>`;
+            card.querySelector('.card-category').textContent = poem.category || 'verse';
+            card.querySelector('.card-title').textContent = poem.title;
+            card.querySelector('.card-snippet').textContent = poem.body.substring(0, len) + '…';
+            if (poem.preview) {
+              card.href = '#preview';
+              card.classList.add('draft-preview-card');
+              card.querySelector('.card-read').textContent = 'Read preview →';
+              card.addEventListener('click', event => { event.preventDefault(); openPreviewPoem(); });
+            }
             masonry.appendChild(card);
           });
 
@@ -1081,5 +1106,6 @@
         });
       });
     </script>
+    <script src="poem-preview.js"></script>
   </body>
 </html>

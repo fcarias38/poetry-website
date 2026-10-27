@@ -15,13 +15,16 @@ if ($result) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme-scope="site" data-theme="dark">
 <head>
+  <script src="/theme.js"></script>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>All Poems</title>
   <meta name="robots" content="index,follow">
+  <link rel="stylesheet" href="/theme.css">
 </head>
-<body>
+<body class="poems-index">
   <h1>All Poems</h1>
   <?php if (empty($poems)): ?>
     <p>No poems yet.</p>

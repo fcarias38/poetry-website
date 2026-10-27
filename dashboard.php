@@ -8,8 +8,9 @@ require 'csrf.php';
 $csrfToken = csrf_token();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme-scope="admin" data-theme="light">
 <head>
+  <script src="/theme.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="<?= htmlspecialchars($csrfToken, ENT_QUOTES) ?>">
@@ -18,21 +19,6 @@ $csrfToken = csrf_token();
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg:        #0e0e10;
-      --panel:     #161618;
-      --surface:   #1b1b1e;
-      --surface-2: #202024;
-      --border:    rgba(255,255,255,0.09);
-      --border-2:  rgba(255,255,255,0.14);
-      --text:      #ededed;
-      --text-dim:  #9a978f;
-      --text-mute: #6b6862;
-      --accent:    #c8a96e;
-      --accent-d:  #b2965e;
-      --danger:    #e5807a;
-      --success:   #7cc98c;
-    }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
     body {
@@ -246,13 +232,15 @@ $csrfToken = csrf_token();
       .analytics-grid { grid-template-columns: 1fr; }
     }
   </style>
+  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="/theme.css">
 </head>
 <body>
 
   <!-- Mobile top bar -->
   <div class="mobile-topbar">
     <a href="/" class="brand"><span class="brand-mark">T</span>Think Room</a>
-    <button onclick="toggleMobileSidebar()" aria-label="Menu"><i class="bi bi-list"></i></button>
+    <button id="mobileMenuButton" onclick="toggleMobileSidebar()" aria-label="Open navigation" aria-controls="mobileSidebar" aria-expanded="false"><i class="bi bi-list"></i></button>
   </div>
 
   <div class="mobile-sidebar-overlay" id="mobileSidebarOverlay" onclick="toggleMobileSidebar()"></div>
@@ -262,13 +250,14 @@ $csrfToken = csrf_token();
       <span style="font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-style:italic; color:var(--text);">Think Room</span>
     </div>
     <div style="flex:1; padding:1rem 0.7rem; overflow-y:auto;">
-      <button class="nav-item active" onclick="showPanel('home'); toggleMobileSidebar()"><i class="bi bi-grid-1x2"></i> Overview</button>
-      <button class="nav-item" onclick="newPoem(); toggleMobileSidebar()"><i class="bi bi-feather"></i> New Poem</button>
-      <button class="nav-item" onclick="showPanel('allpoems'); toggleMobileSidebar()"><i class="bi bi-collection"></i> All Poems</button>
-      <button class="nav-item" onclick="showPanel('archived'); toggleMobileSidebar()"><i class="bi bi-archive"></i> Archived</button>
-      <button class="nav-item" onclick="showPanel('stats'); toggleMobileSidebar()"><i class="bi bi-bar-chart"></i> Analytics</button>
-      <button class="nav-item" onclick="showPanel('comments'); toggleMobileSidebar()"><i class="bi bi-chat-square-text"></i> Comments</button>
-      <button class="nav-item" onclick="showPanel('settings'); toggleMobileSidebar()"><i class="bi bi-sliders"></i> Settings</button>
+      <button class="nav-item active" data-panel="home" onclick="showPanel('home'); toggleMobileSidebar()"><i class="bi bi-grid-1x2"></i> Overview</button>
+      <button class="nav-item" data-panel="compose" onclick="newPoem(); toggleMobileSidebar()"><i class="bi bi-pen"></i> New Poem</button>
+      <button class="nav-item" data-panel="allpoems" onclick="showPanel('allpoems'); toggleMobileSidebar()"><i class="bi bi-collection"></i> All Poems</button>
+      <button class="nav-item" data-panel="archived" onclick="showPanel('archived'); toggleMobileSidebar()"><i class="bi bi-archive"></i> Archived</button>
+      <button class="nav-item" data-panel="categories" onclick="showPanel('categories'); toggleMobileSidebar()"><i class="bi bi-tags"></i> Categories</button>
+      <button class="nav-item" data-panel="stats" onclick="showPanel('stats'); toggleMobileSidebar()"><i class="bi bi-bar-chart"></i> Analytics</button>
+      <button class="nav-item" data-panel="comments" onclick="showPanel('comments'); toggleMobileSidebar()"><i class="bi bi-chat-square-text"></i> Comments</button>
+      <button class="nav-item" data-panel="settings" onclick="showPanel('settings'); toggleMobileSidebar()"><i class="bi bi-sliders"></i> Settings</button>
     </div>
     <div style="padding:1rem 0.7rem; border-top:1px solid var(--border);">
       <a href="/" style="display:flex;align-items:center;gap:.6rem;color:var(--text-dim);text-decoration:none;font-size:.74rem;padding:.6rem .85rem;"><i class="bi bi-arrow-left"></i> Back to site</a>
@@ -288,9 +277,10 @@ $csrfToken = csrf_token();
     <div class="sidebar-nav">
       <p class="nav-section-label">Workspace</p>
       <button class="nav-item active" id="nav-home"     onclick="showPanel('home')"><i class="bi bi-grid-1x2"></i> Overview</button>
-      <button class="nav-item"        id="nav-compose"  onclick="newPoem()"><i class="bi bi-feather"></i> New Poem</button>
+      <button class="nav-item"        id="nav-compose"  onclick="newPoem()"><i class="bi bi-pen"></i> New Poem</button>
       <button class="nav-item"        id="nav-allpoems" onclick="showPanel('allpoems')"><i class="bi bi-collection"></i> All Poems</button>
       <button class="nav-item"        id="nav-archived" onclick="showPanel('archived')"><i class="bi bi-archive"></i> Archived</button>
+      <button class="nav-item"        id="nav-categories" onclick="showPanel('categories')"><i class="bi bi-tags"></i> Categories</button>
       <p class="nav-section-label">Insights</p>
       <button class="nav-item"        id="nav-stats"   onclick="showPanel('stats')"><i class="bi bi-bar-chart"></i> Analytics</button>
       <button class="nav-item"        id="nav-comments" onclick="showPanel('comments')"><i class="bi bi-chat-square-text"></i> Comments <span class="nav-badge" id="pendingBadge" style="display:none;"></span></button>
@@ -308,7 +298,7 @@ $csrfToken = csrf_token();
     <div class="topbar">
       <span class="topbar-title" id="topbarTitle">Overview</span>
       <div class="topbar-actions">
-        <button class="btn-primary" onclick="newPoem()"><i class="bi bi-feather"></i> New poem</button>
+        <button class="btn-primary" onclick="newPoem()"><i class="bi bi-pen"></i> New poem</button>
       </div>
     </div>
 
@@ -319,6 +309,12 @@ $csrfToken = csrf_token();
         Poem saved successfully!
       </div>
       <?php endif; ?>
+
+      <div class="workspace-intro">
+        <p class="eyebrow">Your writing space</p>
+        <h1>A little room for your words.</h1>
+        <p>Create something new, revisit your poems, and see how readers connect with your work.</p>
+      </div>
 
       <div class="stats-grid">
         <div class="stat-card"><i class="bi bi-journal-text ic"></i><p class="stat-label">Total Poems</p><p class="stat-value" id="statTotal">—</p></div>
@@ -341,9 +337,24 @@ $csrfToken = csrf_token();
         <div class="section-head"><h3 id="composeHeading">New poem</h3></div>
         <form id="composeForm">
           <input type="hidden" id="editPoemId" name="id" value="">
-          <div class="form-field"><label for="poemTitle">Title</label><input type="text" id="poemTitle" name="title" placeholder="Give it a name" required /></div>
-          <div class="form-field"><label for="poemCategory">Category</label><input type="text" id="poemCategory" name="category" placeholder="Love, Loss, Reflection…" required /></div>
-          <div class="form-field"><label for="poemBody">Poem</label><textarea id="poemBody" name="body" placeholder="Write here…" required></textarea></div>
+          <div class="form-field"><label for="poemTitle">Title</label><input type="text" id="poemTitle" name="title" placeholder="Give it a name" spellcheck="true" lang="en-US" required /></div>
+          <div class="form-field">
+            <label for="poemCategory">Category</label>
+            <input type="text" id="poemCategory" name="category" list="categoryOptions" maxlength="100" placeholder="Choose a category or type a new one" required />
+            <datalist id="categoryOptions"></datalist>
+            <button type="button" class="category-link" onclick="showPanel('categories')">Manage categories</button>
+          </div>
+          <div class="form-field"><label for="poemBody">Poem</label><textarea id="poemBody" name="body" placeholder="Write here…" spellcheck="true" writingsuggestions="true" lang="en-US" aria-describedby="writingHelp" required></textarea></div>
+          <div class="writing-tools">
+            <div class="writing-toolbar">
+              <label class="spellcheck-toggle"><input type="checkbox" id="spellcheckToggle" checked> Browser spellcheck</label>
+              <label for="grammarLanguage">Language <select id="grammarLanguage"><option value="en-US">English (US)</option><option value="en-GB">English (UK)</option></select></label>
+              <button type="button" class="btn-ghost" id="checkGrammarButton">Check with LanguageTool</button>
+            </div>
+            <p id="writingHelp" class="category-help">Browser spelling and grammar suggestions depend on your browser settings. Clicking “Check with LanguageTool” sends the poem text to <a href="https://languagetool.org" target="_blank" rel="noopener noreferrer">LanguageTool</a> for review (<a href="https://languagetool.org/legal/privacy" target="_blank" rel="noopener noreferrer">privacy policy</a>). Suggestions are optional; your words and line breaks stay yours.</p>
+            <p id="grammarStatus" role="status" aria-live="polite"></p>
+            <div id="grammarResults"></div>
+          </div>
 
           <!-- SEO section -->
           <div class="seo-section">
@@ -369,6 +380,7 @@ $csrfToken = csrf_token();
 
           <div style="display:flex;gap:.8rem;flex-wrap:wrap;">
             <button type="submit" class="btn-primary"><i class="bi bi-check2"></i> Save poem</button>
+            <button type="button" class="btn-ghost" id="previewPoemButton"><i class="bi bi-eye"></i> Preview on site</button>
             <button type="button" class="btn-ghost" onclick="clearCompose()">Clear</button>
             <button type="button" class="btn-ghost" onclick="cancelCompose()"><i class="bi bi-x-lg"></i> Cancel</button>
           </div>
@@ -380,7 +392,7 @@ $csrfToken = csrf_token();
     <div class="panel" id="panel-allpoems">
       <div class="section-head">
         <h3>All poems</h3>
-        <input type="text" id="allPoemsSearch" placeholder="Search…"
+        <input type="text" id="allPoemsSearch" placeholder="Search…" aria-label="Search all poems"
           style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.5rem .8rem;color:var(--text);font-size:.82rem;font-family:'Inter',sans-serif;width:200px;"
           oninput="renderAllPoems(this.value)" />
       </div>
@@ -391,7 +403,7 @@ $csrfToken = csrf_token();
     <div class="panel" id="panel-archived">
       <div class="section-head">
         <h3>Archived poems</h3>
-        <input type="text" id="archivedSearch" placeholder="Search…"
+        <input type="text" id="archivedSearch" placeholder="Search…" aria-label="Search archived poems"
           style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.5rem .8rem;color:var(--text);font-size:.82rem;font-family:'Inter',sans-serif;width:200px;"
           oninput="renderArchived(this.value)" />
       </div>
@@ -400,6 +412,33 @@ $csrfToken = csrf_token();
       </p>
       <div class="poem-list" id="archivedList"></div>
     </div>
+
+    <div class="panel" id="panel-categories">
+      <div class="section-head"><h3>Poem categories</h3><button class="btn-ghost" onclick="loadCategories()">Refresh</button></div>
+      <p class="category-help">Organize your writing into topics like God, Love, Loss, and Heartbreak. Renaming a category updates every poem in it, including archived poems.</p>
+      <form id="categoryCreateForm" class="category-create">
+        <div class="form-field"><label for="categoryName">New category</label><input id="categoryName" name="name" maxlength="100" placeholder="e.g. Heartbreak" required /></div>
+        <button class="btn-primary" type="submit">Add category</button>
+      </form>
+      <p id="categoryStatus" role="status" aria-live="polite"></p>
+      <div class="category-table-wrap">
+        <table class="category-table">
+          <caption>Manage poem categories</caption>
+          <thead><tr><th scope="col">Category name</th><th scope="col" class="category-count">Poems</th><th scope="col">Actions</th></tr></thead>
+          <tbody id="categoryList"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <dialog id="categoryDeleteDialog" class="category-dialog" aria-labelledby="categoryDeleteTitle">
+      <form id="categoryDeleteForm">
+        <h2 id="categoryDeleteTitle">Remove category</h2>
+        <p id="categoryDeleteDescription" class="category-help"></p>
+        <div class="form-field" id="categoryReplacementField"><label for="categoryReplacement">Move poems to</label><select id="categoryReplacement"></select></div>
+        <p id="categoryDeleteError" role="alert"></p>
+        <div class="mod-actions"><button type="submit" class="btn-reject">Remove category</button><button type="button" class="btn-ghost" onclick="document.getElementById('categoryDeleteDialog').close()">Cancel</button></div>
+      </form>
+    </dialog>
 
     <!-- Analytics -->
     <div class="panel" id="panel-stats">
@@ -497,7 +536,7 @@ $csrfToken = csrf_token();
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
     let allPoems = [];
@@ -511,8 +550,13 @@ $csrfToken = csrf_token();
       document.getElementById("panel-" + id).classList.add("active");
       const navEl = document.getElementById("nav-" + id);
       if (navEl) navEl.classList.add("active");
+      document.querySelectorAll('.mobile-sidebar [data-panel]').forEach(button => {
+        button.classList.toggle('active', button.dataset.panel === id);
+      });
       const titles = { home: "Overview", compose: document.getElementById("editPoemId").value ? "Edit Poem" : "New Poem", allpoems: "All Poems", archived: "Archived", stats: "Analytics", comments: "Comments", settings: "Settings" };
       document.getElementById("topbarTitle").textContent = titles[id] || id;
+      if (id === 'categories') document.getElementById('topbarTitle').textContent = 'Categories';
+      if (id === 'categories' || id === 'compose') loadCategories();
       if (id === "allpoems") renderAllPoems();
       if (id === "archived") renderArchived();
       if (id === "home") loadStats();
@@ -522,9 +566,17 @@ $csrfToken = csrf_token();
     }
 
     function toggleMobileSidebar() {
-      document.getElementById("mobileSidebar").classList.toggle("open");
-      document.getElementById("mobileSidebarOverlay").classList.toggle("open");
+      const open = document.getElementById("mobileSidebar").classList.toggle("open");
+      document.getElementById("mobileSidebarOverlay").classList.toggle("open", open);
+      const menuButton = document.getElementById("mobileMenuButton");
+      menuButton.setAttribute("aria-expanded", String(open));
+      menuButton.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+      if (open) document.querySelector('.mobile-sidebar .nav-item.active')?.focus();
+      else menuButton.focus();
     }
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && document.getElementById('mobileSidebar').classList.contains('open')) toggleMobileSidebar();
+    });
 
     const fmt = n => (n ?? 0).toLocaleString();
 
@@ -615,6 +667,7 @@ $csrfToken = csrf_token();
         document.getElementById("poemTitle").value = p.title;
         document.getElementById("poemCategory").value = p.category;
         document.getElementById("poemBody").value = p.body;
+        document.getElementById("poemBody").dispatchEvent(new Event('input', { bubbles: true }));
         document.getElementById("metaDescription").value = p.meta_description || "";
         document.getElementById("metaKeywords").value = p.meta_keywords || "";
         document.getElementById("composeHeading").textContent = "Edit poem";
@@ -699,7 +752,7 @@ $csrfToken = csrf_token();
 
     // ── Native analytics ──
     function loadAnalytics() {
-      fetch("get_analytics.php").then(r => r.json()).then(data => {
+      return fetch("get_analytics.php").then(r => r.json()).then(data => {
         if (!data.success) { showToast("Could not load analytics."); return; }
         const t = data.totals;
         document.getElementById("aViews").textContent    = fmt(t.views);
@@ -709,7 +762,7 @@ $csrfToken = csrf_token();
 
         renderLeaderboard("topEngagement", data.top.engagement, "pts");
         renderLeaderboard("topViews", data.top.views, "views");
-        renderCategories(data.categories);
+        renderCategoryBreakdown(data.categories);
         renderTrend(data.comment_trend);
         renderRecentComments(data.recent_comments);
 
@@ -766,7 +819,7 @@ $csrfToken = csrf_token();
       });
     }
 
-    function renderCategories(cats) {
+    function renderCategoryBreakdown(cats) {
       const el = document.getElementById("catBreakdown");
       el.innerHTML = "";
       if (!cats || !cats.length) { el.innerHTML = '<p style="color:var(--text-mute);font-size:.82rem;font-style:italic;">No data yet.</p>'; return; }
@@ -897,7 +950,7 @@ $csrfToken = csrf_token();
       if (active) {
         toggle.style.background = "var(--accent)";
         toggle.setAttribute("aria-checked", "true");
-        knob.style.left = "25px"; knob.style.background = "#1a1408";
+        knob.style.left = "25px"; knob.style.background = "#fff";
         status.textContent = "On — visitors are seeing the maintenance page";
         status.style.color = "var(--accent)";
       } else {
@@ -922,7 +975,7 @@ $csrfToken = csrf_token();
     // ── Init ──
     document.addEventListener("DOMContentLoaded", () => {
       const saved = localStorage.getItem("tr_dashboard_panel");
-      showPanel(saved && ["home","compose","allpoems","archived","stats","comments","settings"].includes(saved) ? saved : "home");
+      showPanel(saved && ["home","compose","allpoems","archived","categories","stats","comments","settings"].includes(saved) ? saved : "home");
       refreshPendingBadge(); // show pending count on the Comments nav item
     });
     document.querySelectorAll(".nav-item").forEach(btn => {
@@ -932,5 +985,7 @@ $csrfToken = csrf_token();
       });
     });
   </script>
+  <script src="admin-categories.js?v=20261026-2"></script>
+  <script src="admin-writing.js"></script>
 </body>
 </html>

@@ -1,7 +1,8 @@
 <?php include 'maintenance_check.php'; ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme-scope="site" data-theme="dark">
 <head>
+  <script src="/theme.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>About the Author | Think Room</title>
@@ -70,6 +71,7 @@
       .page-footer { padding:1.2rem; flex-direction:column; align-items:flex-start; }
     }
   </style>
+  <link rel="stylesheet" href="/theme.css">
 </head>
 <body>
   <nav class="topnav">

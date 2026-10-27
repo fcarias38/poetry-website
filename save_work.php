@@ -52,6 +52,16 @@ if ($title === '' || $category === '' || $body === '') {
 }
 
 // Normalise empty SEO fields to NULL so poem.php falls back to auto-generation.
+require 'categories.php';
+try {
+    $category = category_register($conn, $category);
+} catch (Throwable $error) {
+    http_response_code($error instanceof InvalidArgumentException ? 422 : 500);
+    echo json_encode(['success' => false, 'error' => $error instanceof InvalidArgumentException
+        ? $error->getMessage() : 'Could not save the category. Please try again.']);
+    exit;
+}
+
 $metaDescParam = $metaDesc !== '' ? $metaDesc : null;
 $metaKwParam   = $metaKeywords !== '' ? $metaKeywords : null;
 

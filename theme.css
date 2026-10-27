@@ -1,0 +1,71 @@
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f7f4ee; --panel: #fffcf7; --surface: #ffffff; --surface-2: #f3ede2;
+  --border: #e5ded1; --border-2: #cdbd9f;
+  --text: #302b24; --text-dim: #625b50; --text-mute: #756c5e;
+  --accent: #866127; --accent-d: #6f4e1e; --gold: #c8a96e;
+  --danger: #aa3d36; --success: #327346;
+  --shadow: 0 4px 20px rgba(73,54,23,0.045);
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0e0e10; --panel: #161618; --surface: #1b1b1e; --surface-2: #242328;
+  --border: #ffffff17; --border-2: #ffffff30;
+  --text: #ededed; --text-dim: #b5afa5; --text-mute: #a29b90;
+  --accent: #d2b57e; --accent-d: #b2965e; --gold: #c8a96e;
+  --danger: #f09891; --success: #91d2a0;
+  --shadow: 0 4px 20px #00000025;
+}
+.theme-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; flex-shrink: 0; min-height: 40px; padding: 0.45rem 0.75rem; background: var(--surface, #1b1b1e); color: var(--text, #ededed); border: 1px solid var(--border-2, #ffffff30); border-radius: 8px; cursor: pointer; font: 500 0.76rem/1.3 "Inter", system-ui, sans-serif; white-space: nowrap; }
+.theme-toggle:hover { background: var(--surface-2); border-color: var(--accent); }
+.theme-toggle:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.theme-toggle-icon { font: 1.2rem/1 system-ui, sans-serif; }
+.theme-toggle-floating { position: fixed; top: 1rem; right: 1rem; z-index: 500; box-shadow: var(--shadow); }
+.theme-actions { display: flex; align-items: center; gap: 0.8rem; }
+html[data-theme] body { background-color: var(--bg); color: var(--text-dim); }
+html[data-theme] .topnav, html[data-theme] .topbar { background: var(--panel); }
+html[data-theme] .topnav-brand:hover { color: var(--accent); }
+html[data-theme="light"] .prose p,
+html[data-theme="light"] .poem-body,
+html[data-theme="light"] .reader-poem { color: var(--text); }
+html[data-theme="light"] .field label { color: var(--text); }
+html[data-theme="light"] .btn-primary,
+html[data-theme="light"] .act-post,
+html[data-theme="light"] .modal-box button[type="submit"],
+html[data-theme="light"] .comment-form button { color: #fff; }
+html[data-theme="light"] .reader-close,
+html[data-theme="light"] .reader-close:hover { color: var(--text); background: var(--surface-2); border-color: var(--border); }
+html[data-theme="light"] .brand-mark { background: linear-gradient(145deg, #e9d7b4, var(--gold)); }
+
+/* The admin layout uses a few decorative surfaces in addition to the palette. */
+html[data-theme="dark"][data-theme-scope="admin"] .main { background: var(--bg); }
+html[data-theme="dark"][data-theme-scope="admin"] .brand-panel { background: radial-gradient(ellipse at top left, #c8a96e12, transparent 65%), var(--panel); }
+html[data-theme="dark"][data-theme-scope="admin"] .brand-center blockquote { color: var(--text-dim); }
+html[data-theme="dark"][data-theme-scope="admin"] .nav-item.active { background: #c8a96e20; color: var(--accent); }
+html[data-theme="dark"][data-theme-scope="admin"] .stat-card { border-top-color: var(--accent-d); }
+html[data-theme="dark"][data-theme-scope="admin"] .stat-card .ic,
+html[data-theme="dark"][data-theme-scope="admin"] .poem-row-cat { background: #c8a96e14; }
+html[data-theme="dark"][data-theme-scope="admin"] .btn-primary,
+html[data-theme="dark"][data-theme-scope="admin"] .btn-submit { color: #21190c; }
+html[data-theme="dark"][data-theme-scope="admin"] .serp-preview { background: var(--bg); }
+html[data-theme="dark"][data-theme-scope="admin"] .serp-title { color: #9ac0ff; }
+html[data-theme="dark"][data-theme-scope="admin"] .toast { background: var(--surface); }
+html[data-theme="dark"][data-theme-scope="admin"] .nav-badge { color: #21190c; }
+
+/* Legacy splash and maintenance pages also follow the public preference. */
+html[data-theme] .maintenance-page .brand { color: var(--text); }
+html[data-theme] .maintenance-page .message,
+html[data-theme] .maintenance-page .sub,
+html[data-theme] .maintenance-page footer { color: var(--text-dim); }
+html[data-theme="light"] .splash-page .overlay { background: rgba(255,252,247,0.9); }
+html[data-theme="light"] .splash-page { color: var(--text); }
+html[data-theme="light"] .splash-page .quote { color: var(--text-dim); }
+html[data-theme="light"] .splash-page .quote-attr,
+html[data-theme="light"] .splash-page .countdown,
+html[data-theme="light"] .splash-page footer { color: var(--text-mute); }
+html[data-theme="light"] .splash-page .btn-enter { border-color: var(--accent); color: var(--accent); background: var(--surface); }
+html[data-theme] .poems-index { padding: 5rem max(1.2rem, calc((100vw - 850px) / 2)); font-family: system-ui, sans-serif; }
+.poems-index article { padding: 1.5rem 0; border-bottom: 1px solid var(--border); }
+.poems-index a { color: var(--accent); }
+.poems-index pre { white-space: pre-wrap; font-family: Georgia, serif; line-height: 1.8; }
+@media (max-width: 480px) { .theme-toggle-label { display: none; } .theme-toggle { min-width: 40px; padding-inline: 0.55rem; } .theme-actions { gap: 0.6rem; } }
