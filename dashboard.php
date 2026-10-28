@@ -232,7 +232,7 @@ $csrfToken = csrf_token();
       .analytics-grid { grid-template-columns: 1fr; }
     }
   </style>
-  <link rel="stylesheet" href="admin.css?v=20261027-3">
+  <link rel="stylesheet" href="admin.css?v=20261027-4">
   <link rel="stylesheet" href="/theme.css?v=20261027-4">
 </head>
 <body>
@@ -501,7 +501,7 @@ $csrfToken = csrf_token();
       <!-- Full per-poem breakdown -->
       <div class="card-box" style="margin-top:1.2rem;">
         <h4>Every poem — full breakdown</h4>
-        <div style="overflow-x:auto;">
+        <div class="metric-table-scroll" role="region" aria-label="Per-poem analytics, scroll to view more" tabindex="0">
           <table class="metric-table" id="poemMetricTable">
             <thead>
               <tr>
