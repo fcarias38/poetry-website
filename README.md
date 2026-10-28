@@ -131,6 +131,50 @@ CREATE TABLE `comments` (
 
 ---
 
+## Like, comment, and share notifications
+
+The dashboard bell shows an unread count and the latest 40 notifications, with
+unread activity first. It checks every 30 seconds while the dashboard is visible
+and refreshes when you return to the tab. Notifications remain unread until you
+choose **Mark all as read**. Comment notifications link to the moderation panel;
+reading a notification does not approve the comment.
+
+Open **Notifications** from the desktop or mobile dashboard menu for a dedicated
+activity page. The page and bell share the same feed and read state, and the menu
+shows an unread count. The dashboard remembers the last panel you opened.
+
+Deploy `notifications.php`, `admin_notifications.php`, `admin-notifications.js`,
+and the updated dashboard, admin CSS, session helper, like/comment/share handlers,
+`home.shtml`, `poem.php`, and `.htaccess`
+together. The database account needs `CREATE` permission on first use for the
+`admin_notifications` and `notification_email_limits` tables. Only new activity
+is recorded; historical likes and comments are not imported.
+
+Email alerts use `$ADMIN_EMAIL` and `$MAIL_FROM` from the existing, private
+`admin_config.php`. The host must support PHP `mail()` with an authorized sender.
+Optional settings, also shown in `admin_config.example.php`:
+
+```php
+$NOTIFICATION_EMAIL_ENABLED = true;
+$NOTIFICATION_EMAIL = $ADMIN_EMAIL; // Or a different recipient.
+$NOTIFICATION_EMAIL_LIKES = true;
+$NOTIFICATION_EMAIL_COMMENTS = true;
+$NOTIFICATION_EMAIL_SHARES = true;
+```
+
+Comment emails send when a comment arrives for approval. Like emails are limited
+to one per poem every 15 minutes; all likes appear in the dashboard. Email failure
+is logged and does not prevent likes/comments or remove dashboard notifications.
+Share emails send for each recorded share action. These record the site's share
+tools or copied links; they cannot confirm a completed post on another service.
+Cancelled native share dialogs and failed clipboard copies do not record a share.
+Mail delivery depends on the host; there is no background retry queue.
+
+Verification: `node tests/notifications.integration.cjs` uses disposable PHP and
+MariaDB instances, a local SMTP capture server, and headless Chrome. It never
+uses the production database or sends external email. Windows/XAMPP defaults can
+be overridden with `TEST_PHP`, `TEST_MYSQL_BIN`, and `TEST_CHROME`.
+
 ## Local Setup
 
 1. Clone the repository:

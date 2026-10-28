@@ -11,6 +11,7 @@ const chrome = process.env.TEST_CHROME || 'C:/Program Files/Google/Chrome/Applic
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'think-room-browser-'));
 const categories = ['God', 'Love', 'Heartbreak'].map((name, i) => ({ id: String(i + 1), name, poem_count: i + 1 }));
 const poems = categories.map((category, i) => ({ id: i + 1, title: ['A quiet prayer', 'Where the light falls', 'What remains'][i], category: category.name, body: 'A line of poetry,\nand a moment to breathe.', slug: 'sample-' + i, archived: 0, views: 40, likes: 8, comments: 2, comment_count: 2, shares: 3, engagement: 86 }));
+let notificationsRead = false;
 const footerMarkup = name => fs.readFileSync(path.join(root, name), 'utf8').match(/<footer\b[^>]*>[\s\S]*?<\/footer>/)[0].replace(/\s+/g, ' ').trim();
 for (const name of ['author.php', 'contact.php', 'poem.php', 'index.shtml', 'maintenance.php']) {
   assert.equal(footerMarkup(name), footerMarkup('home.shtml'), name + ' must share the gallery footer');
@@ -18,6 +19,15 @@ for (const name of ['author.php', 'contact.php', 'poem.php', 'index.shtml', 'mai
 }
 const server = http.createServer((request, response) => {
   const pathname = new URL(request.url, 'http://localhost').pathname;
+  if (pathname === '/admin_notifications.php') {
+    if (request.method === 'POST') notificationsRead = true;
+    response.setHeader('Content-Type', 'application/json');
+    response.end(JSON.stringify({ success: true, unread_count: notificationsRead ? 0 : 2, latest_id: notificationsRead ? 0 : 2,
+      notifications: [
+        { id: 2, kind: 'share', poem_title: '<img src=x onerror=alert(1)>', created_at: '2026-10-27T12:00:00Z', read_at: notificationsRead ? 'read' : null },
+        { id: 1, kind: 'comment', actor: 'Reader', poem_title: 'A quiet prayer', created_at: '2026-10-27T11:00:00Z', read_at: notificationsRead ? 'read' : null }
+      ] })); return;
+  }
   const approvedComments = [{ name: '<img src=x onerror=alert(1)>', comment: '<script>unsafe</script>', created_at: '2026-10-27 10:00:00' }, { name: 'Reader', comment: 'Beautiful poem.', created_at: '2026-10-27 09:00:00' }];
   if (pathname === '/get_likes_comments.php') {
     const empty = new URL(request.url, 'http://localhost').searchParams.get('id') === '3';
@@ -43,7 +53,7 @@ const server = http.createServer((request, response) => {
       comment_trend: [{ day: '2026-10-25', count: 2 }, { day: '2026-10-26', count: 4 }],
       recent_comments: [{ name: 'Reader', comment: 'Beautiful words', poem_title: poems[0].title, created_at: '2026-10-26' }]
     },
-    '/get_pending_comments.php': { success: true, count: 0, comments: [] },
+    '/get_pending_comments.php': { success: true, count: 0, comments: [], pending: [] },
     '/get_poems.php': poems
   };
   if (fixtures[pathname]) { response.setHeader('Content-Type', 'application/json'); response.end(JSON.stringify(fixtures[pathname])); return; }
@@ -51,6 +61,7 @@ const server = http.createServer((request, response) => {
   if (!file.startsWith(root + path.sep) || !fs.existsSync(file)) { response.writeHead(404); response.end(); return; }
   let content = fs.readFileSync(file);
   if (pathname === '/dashboard.php') {
+    notificationsRead = false;
     let markup = content.toString().replace(/<\?php if \(isset\(\$_GET\['success'\]\)\): \?>[\s\S]*?<\?php endif; \?>/g, '').replace(/<\?(?:php|=)[\s\S]*?\?>/g, '');
     const checks = `<script>document.addEventListener('DOMContentLoaded', async () => {
       try {
@@ -68,6 +79,23 @@ const server = http.createServer((request, response) => {
         if(document.querySelectorAll('#trendChart .trend-bar').length !== 2) throw Error('Analytics comment trend');
         if(!document.querySelector('#recentComments .mini-comment')) throw Error('Analytics recent comments');
         if(document.querySelectorAll('.category-table tbody tr').length !== 3) throw Error('Analytics overwrote category management');
+        const waitFor=async predicate=>{for(let i=0;i<100;i++){if(predicate())return;await new Promise(resolve=>setTimeout(resolve,30));}throw Error('Notifications timed out');};
+        if(innerWidth<800) { toggleMobileSidebar(); document.querySelector('[data-panel="notifications"]').click(); }
+        else document.getElementById('nav-notifications').click();
+        await waitFor(()=>document.querySelectorAll('#notificationPageList li').length===2 && !document.getElementById('notificationPageRead').disabled);
+        if(!document.getElementById('panel-notifications').classList.contains('active') || document.getElementById('topbarTitle').textContent!=='Notifications') throw Error('Notifications navigation');
+        if(!document.getElementById('nav-notifications').classList.contains('active')) throw Error('Notifications menu selection');
+        if(localStorage.getItem('tr_dashboard_panel')!=='notifications') throw Error('Notifications panel persistence');
+        if(document.querySelector('#notificationPageList img')) throw Error('Notification text must be safe');
+        if(!document.getElementById('notificationPageList').textContent.includes('share options')) throw Error('Share notification missing');
+        if([...document.querySelectorAll('[data-notification-count]')].some(badge=>badge.hidden || badge.textContent!=='2')) throw Error('Menu unread counts');
+        if(innerWidth<800 && document.getElementById('mobileSidebar').classList.contains('open')) throw Error('Notifications mobile menu remains open');
+        document.getElementById('notificationPageRead').click();
+        await waitFor(()=>document.getElementById('notificationCount').hidden);
+        if(document.querySelectorAll('#notificationPageList .unread, #notificationList .unread').length) throw Error('Read state must sync to bell and page');
+        if([...document.querySelectorAll('[data-notification-count]')].some(badge=>!badge.hidden)) throw Error('Read menu badges');
+        document.querySelector('#notificationPageList .category-link').click();
+        if(!document.getElementById('panel-comments').classList.contains('active')) throw Error('Notification moderation action');
         showPanel('categories'); await loadCategories();
         if(document.documentElement.scrollWidth > innerWidth) throw Error('Page overflow');
         document.documentElement.dataset.browserCheck = 'PASS';

@@ -115,7 +115,9 @@ function admin_session_start(): void {
     if (!empty($_SESSION['logged_in'])) {
         $_SESSION['authenticated_at'] = $_SESSION['authenticated_at'] ?? $now;
         $_SESSION['auth_fingerprint'] = $_SESSION['auth_fingerprint'] ?? admin_credential_fingerprint();
-        $_SESSION['last_activity'] = $now;
+        if (!defined('ADMIN_SESSION_BACKGROUND') || !ADMIN_SESSION_BACKGROUND) {
+            $_SESSION['last_activity'] = $now;
+        }
     }
 }
 

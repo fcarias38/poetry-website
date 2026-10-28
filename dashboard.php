@@ -232,7 +232,7 @@ $csrfToken = csrf_token();
       .analytics-grid { grid-template-columns: 1fr; }
     }
   </style>
-  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="admin.css?v=20261027-3">
   <link rel="stylesheet" href="/theme.css?v=20261027-4">
 </head>
 <body>
@@ -257,6 +257,7 @@ $csrfToken = csrf_token();
       <button class="nav-item" data-panel="categories" onclick="showPanel('categories'); toggleMobileSidebar()"><i class="bi bi-tags"></i> Categories</button>
       <button class="nav-item" data-panel="stats" onclick="showPanel('stats'); toggleMobileSidebar()"><i class="bi bi-bar-chart"></i> Analytics</button>
       <button class="nav-item" data-panel="comments" onclick="showPanel('comments'); toggleMobileSidebar()"><i class="bi bi-chat-square-text"></i> Comments</button>
+      <button class="nav-item" data-panel="notifications" onclick="showPanel('notifications'); toggleMobileSidebar()"><i class="bi bi-bell"></i> Notifications <span class="nav-badge" data-notification-count hidden></span></button>
       <button class="nav-item" data-panel="settings" onclick="showPanel('settings'); toggleMobileSidebar()"><i class="bi bi-sliders"></i> Settings</button>
     </div>
     <div style="padding:1rem 0.7rem; border-top:1px solid var(--border);">
@@ -284,6 +285,7 @@ $csrfToken = csrf_token();
       <p class="nav-section-label">Insights</p>
       <button class="nav-item"        id="nav-stats"   onclick="showPanel('stats')"><i class="bi bi-bar-chart"></i> Analytics</button>
       <button class="nav-item"        id="nav-comments" onclick="showPanel('comments')"><i class="bi bi-chat-square-text"></i> Comments <span class="nav-badge" id="pendingBadge" style="display:none;"></span></button>
+      <button class="nav-item" id="nav-notifications" onclick="showPanel('notifications')"><i class="bi bi-bell"></i> Notifications <span class="nav-badge" data-notification-count hidden></span></button>
       <p class="nav-section-label">Site</p>
       <button class="nav-item"        id="nav-settings" onclick="showPanel('settings')"><i class="bi bi-sliders"></i> Settings</button>
     </div>
@@ -298,6 +300,19 @@ $csrfToken = csrf_token();
     <div class="topbar">
       <span class="topbar-title" id="topbarTitle">Overview</span>
       <div class="topbar-actions">
+        <div class="notification-center" id="notificationCenter">
+          <button class="btn-ghost notification-toggle" id="notificationToggle" type="button" aria-label="Notifications" aria-expanded="false" aria-controls="notificationPopover">
+            <i class="bi bi-bell" aria-hidden="true"></i><span id="notificationCount" hidden></span>
+          </button>
+          <section class="notification-popover" id="notificationPopover" aria-label="Notifications" hidden>
+            <div class="notification-heading"><h2>Notifications</h2><button class="icon-btn" id="notificationClose" type="button" aria-label="Close notifications"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>
+            <div class="notification-toolbar"><button class="btn-ghost" id="notificationRead" type="button" disabled>Mark all as read</button><button class="btn-ghost" id="notificationRefresh" type="button">Refresh</button></div>
+            <p id="notificationStatus" role="status">Loading notifications...</p>
+            <ul id="notificationList"></ul>
+            <button class="category-link" type="button" onclick="showPanel('notifications')">View notifications page</button>
+          </section>
+          <span class="notification-sr" id="notificationAnnouncement" role="status" aria-live="polite"></span>
+        </div>
         <button class="btn-primary" onclick="newPoem()"><i class="bi bi-pen"></i> New poem</button>
       </div>
     </div>
@@ -516,6 +531,17 @@ $csrfToken = csrf_token();
       <div id="pendingList"></div>
     </div>
 
+    <!-- Notifications -->
+    <div class="panel" id="panel-notifications">
+      <div class="section-head"><h3>Notifications</h3></div>
+      <p class="category-help">Likes, comments, and shares from your readers. New activity updates automatically. Reading notifications does not approve comments.</p>
+      <div class="notification-page">
+        <div class="notification-toolbar"><button class="btn-ghost" id="notificationPageRead" type="button" disabled>Mark all as read</button><button class="btn-ghost" id="notificationPageRefresh" type="button">Refresh</button></div>
+        <p id="notificationPageStatus" role="status">Loading notifications...</p>
+        <ul id="notificationPageList"></ul>
+      </div>
+    </div>
+
     <!-- Settings -->
     <div class="panel" id="panel-settings">
       <div class="section-head"><h3>Settings</h3></div>
@@ -556,6 +582,9 @@ $csrfToken = csrf_token();
       const titles = { home: "Overview", compose: document.getElementById("editPoemId").value ? "Edit Poem" : "New Poem", allpoems: "All Poems", archived: "Archived", stats: "Analytics", comments: "Comments", settings: "Settings" };
       document.getElementById("topbarTitle").textContent = titles[id] || id;
       if (id === 'categories') document.getElementById('topbarTitle').textContent = 'Categories';
+      if (id === 'notifications') document.getElementById('topbarTitle').textContent = 'Notifications';
+      localStorage.setItem('tr_dashboard_panel', id);
+      document.dispatchEvent(new CustomEvent('dashboard:panel', { detail: { id } }));
       if (id === 'categories' || id === 'compose') loadCategories();
       if (id === "allpoems") renderAllPoems();
       if (id === "archived") renderArchived();
@@ -975,7 +1004,7 @@ $csrfToken = csrf_token();
     // ── Init ──
     document.addEventListener("DOMContentLoaded", () => {
       const saved = localStorage.getItem("tr_dashboard_panel");
-      showPanel(saved && ["home","compose","allpoems","archived","categories","stats","comments","settings"].includes(saved) ? saved : "home");
+      showPanel(saved && ["home","compose","allpoems","archived","categories","stats","comments","notifications","settings"].includes(saved) ? saved : "home");
       refreshPendingBadge(); // show pending count on the Comments nav item
     });
     document.querySelectorAll(".nav-item").forEach(btn => {
@@ -987,5 +1016,6 @@ $csrfToken = csrf_token();
   </script>
   <script src="admin-categories.js?v=20261026-2"></script>
   <script src="admin-writing.js"></script>
+  <script src="admin-notifications.js?v=20261027-3"></script>
 </body>
 </html>

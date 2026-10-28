@@ -30,6 +30,19 @@ const php = process.env.TEST_PHP || 'C:/xampp/php/php.exe';
     assert.ok(categoryScript.includes('function renderManagedCategories()'));
     assert.ok(!categoryScript.includes('function renderCategories('));
     console.log('PASS: live dashboard and category script use separate renderers.');
+    assert.ok(dashboard.includes('id="notificationToggle"'), 'Live dashboard is missing the notification bell');
+    assert.ok(dashboard.includes('id="nav-notifications"') && dashboard.includes('data-panel="notifications"'), 'Desktop and mobile menus must link to notifications');
+    assert.ok(dashboard.includes('id="panel-notifications"') && dashboard.includes('id="notificationPageList"'), 'Live notifications page is missing');
+    const feedResponse = await fetch(base + 'admin_notifications.php', { headers, redirect: 'manual' });
+    assert.equal(feedResponse.status, 200, 'Live notification API must not redirect');
+    assert.ok(feedResponse.headers.get('cache-control').includes('no-store'));
+    const feed = await feedResponse.json();
+    assert.equal(feed.success, true, 'Live notification storage failed to initialize');
+    assert.ok(Number.isInteger(feed.unread_count) && Array.isArray(feed.notifications));
+    assert.equal((await fetch(base + 'admin_notifications.php')).status, 403, 'Notifications must remain private');
+    const notifications = await (await fetch(base + 'admin-notifications.js?v=20261027-3', { headers })).text();
+    assert.ok(notifications.includes("item.kind === 'share'"), 'Live notification widget must recognize shares');
+    console.log('PASS: live notification bell, share rendering, authenticated feed, private/no-cache API and database initialization.');
   } finally {
     await fetch(base + 'logout.php', { headers, redirect: 'manual' });
   }

@@ -637,19 +637,19 @@
       // Uses the native share sheet on devices that support it (mostly mobile),
       // and falls back to copying the link on desktop so the button always works.
       function sharePoem() {
-        trackShare();
         if (navigator.share) {
           navigator.share({
             title: POEM_TITLE,
             text: `"${POEM_TITLE}" — Think Room by Freddy Carias`,
             url: POEM_URL
-          }).catch(() => {});
+          }).then(trackShare).catch(() => {});
         } else {
           copyLink();
         }
       }
       function copyLink() {
         const done = () => {
+          trackShare();
           const el = document.getElementById("copyConfirm");
           el.classList.add("show");
           setTimeout(() => el.classList.remove("show"), 2000);
@@ -666,9 +666,10 @@
           ta.style.opacity = "0";
           document.body.appendChild(ta);
           ta.select();
-          try { document.execCommand("copy"); } catch (e) {}
+          let copied = false;
+          try { copied = document.execCommand("copy"); } catch (e) {}
           document.body.removeChild(ta);
-          done();
+          if (copied) done();
         }
       }
 
