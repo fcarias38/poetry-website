@@ -905,11 +905,12 @@
 
       // ── Share ──
       function trackReaderShare() {
+        const card = GalleryActions.current();
         const title = document.getElementById("readerTitle").innerText;
         if (!title) return;
         fetch("track_share.php", {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title: title })
+          body: JSON.stringify(card ? { id: Number(card.dataset.poemId) } : { title: title })
         }).catch(() => {});
       }
       function shareUrl() {
@@ -923,22 +924,21 @@
         document.getElementById("nativeShareBtn").style.display = "inline-flex";
       }
       function nativeShare() {
-        trackReaderShare();
         const title = document.getElementById("readerTitle").innerText;
         navigator.share({
           title: title,
           text: `"${title}" — Think Room by Freddy Carias`,
           url: shareUrl()
-        }).catch(() => {});
+        }).then(trackReaderShare).catch(() => {});
       }
       function shareFacebook() {
         trackReaderShare();
         window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl())}`, "_blank");
       }
       function copyShareLink() {
-        trackReaderShare();
         const url  = shareUrl();
         const done = () => {
+          trackReaderShare();
           const btn = document.getElementById("copyLinkBtn");
           const el  = document.getElementById("copyConfirm");
           btn.classList.add("copied");
@@ -957,9 +957,10 @@
           ta.style.opacity = "0";
           document.body.appendChild(ta);
           ta.select();
-          try { document.execCommand("copy"); } catch (e) {}
+          let copied = false;
+          try { copied = document.execCommand("copy"); } catch (e) {}
           document.body.removeChild(ta);
-          done();
+          if (copied) done();
         }
       }
 

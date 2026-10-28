@@ -71,7 +71,10 @@ Options +Includes
 
 # ── Block the password-reset token store entirely ──
 RewriteRule ^(reset_tokens|admin_tokens)/ - [F,L]
-RewriteRule ^admin_session\.php$ - [F,L]
+RewriteRule ^(admin_session|notifications)\.php$ - [F,L]
+
+# Keep the notification API URL intact for GET and CSRF-protected POST requests.
+RewriteRule ^admin_notifications\.php$ - [L]
 
 # ── Clean URLs: hide .php extension ──
 # Redirect direct .php requests to clean URLs (except config files)

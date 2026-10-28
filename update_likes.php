@@ -28,7 +28,16 @@ if (!$id) {
 $stmt = $conn->prepare("UPDATE poems SET likes = likes + 1 WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
+$likeSaved = $stmt->affected_rows === 1;
 $stmt->close();
+if (!$likeSaved) {
+    http_response_code(404);
+    echo json_encode(['error' => 'Poem not found']);
+    $conn->close();
+    exit;
+}
+require_once __DIR__ . '/notifications.php';
+notification_record($conn, 'like', $id);
 
 $stmt2 = $conn->prepare("SELECT likes FROM poems WHERE id = ?");
 $stmt2->bind_param("i", $id);

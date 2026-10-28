@@ -45,7 +45,12 @@ if (!$poem_id) {
 $stmt = $conn->prepare("INSERT INTO comments (poem_id, name, comment, ip_address, approved) VALUES (?, ?, ?, ?, 0)");
 $stmt->bind_param("isss", $poem_id, $name, $comment, $ip);
 $stmt->execute();
+$commentSaved = $stmt->affected_rows === 1;
 $stmt->close();
+if ($commentSaved) {
+    require_once __DIR__ . '/notifications.php';
+    notification_record($conn, 'comment', $poem_id, $name);
+}
 
 // Do NOT return the new comment — it's pending review. Return only the
 // currently APPROVED comments plus a flag so the UI can say "pending".
