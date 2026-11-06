@@ -5,6 +5,7 @@ if (!isset($_SESSION['logged_in'])) {
     exit;
 }
 require 'csrf.php';
+header('Cache-Control: no-store, private');
 $csrfToken = csrf_token();
 ?>
 <!DOCTYPE html>
@@ -130,6 +131,14 @@ $csrfToken = csrf_token();
       transition: border-color 0.18s, box-shadow 0.18s; resize: vertical;
     }
     .form-field textarea { min-height: 300px; line-height: 1.8; font-family: "Cormorant Garamond", serif; font-size: 1.05rem; }
+    .poem-editor { position: relative; }
+    .poem-editor textarea { display: block; }
+    #spellingHighlights { position: absolute; top: 0; left: 0; z-index: 1; pointer-events: none; overflow: hidden; color: transparent; border-style: solid; border-color: transparent; white-space: pre-wrap; overflow-wrap: break-word; }
+    #spellingHighlights .spelling-error { text-decoration-line: underline; text-decoration-style: wavy; text-decoration-color: #e44b62; text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
+    #spellingMenu { position: fixed; z-index: 2000; min-width: 190px; max-width: min(280px, calc(100vw - 16px)); max-height: calc(100vh - 16px); overflow: auto; padding: .4rem; background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 9px; box-shadow: 0 8px 28px #0003; }
+    #spellingMenu p { padding: .4rem .6rem; font: .78rem 'Inter', sans-serif; color: var(--text-dim); }
+    #spellingMenu button { display: block; width: 100%; padding: .55rem .7rem; border: 0; border-radius: 5px; background: transparent; color: var(--text); font: .88rem 'Inter', sans-serif; text-align: left; cursor: pointer; }
+    #spellingMenu button:hover, #spellingMenu button:focus-visible { background: var(--panel); outline: 2px solid var(--accent); outline-offset: -2px; }
     .form-field input::placeholder, .form-field textarea::placeholder { color: var(--text-mute); }
     .form-field input:focus, .form-field textarea:focus, .form-field select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(200,169,110,0.14); }
 
@@ -253,6 +262,7 @@ $csrfToken = csrf_token();
       <button class="nav-item active" data-panel="home" onclick="showPanel('home'); toggleMobileSidebar()"><i class="bi bi-grid-1x2"></i> Overview</button>
       <button class="nav-item" data-panel="compose" onclick="newPoem(); toggleMobileSidebar()"><i class="bi bi-pen"></i> New Poem</button>
       <button class="nav-item" data-panel="allpoems" onclick="showPanel('allpoems'); toggleMobileSidebar()"><i class="bi bi-collection"></i> All Poems</button>
+      <button class="nav-item" data-panel="drafts" onclick="showPanel('drafts'); toggleMobileSidebar()"><i class="bi bi-file-earmark-text"></i> Drafts</button>
       <button class="nav-item" data-panel="archived" onclick="showPanel('archived'); toggleMobileSidebar()"><i class="bi bi-archive"></i> Archived</button>
       <button class="nav-item" data-panel="categories" onclick="showPanel('categories'); toggleMobileSidebar()"><i class="bi bi-tags"></i> Categories</button>
       <button class="nav-item" data-panel="stats" onclick="showPanel('stats'); toggleMobileSidebar()"><i class="bi bi-bar-chart"></i> Analytics</button>
@@ -280,6 +290,7 @@ $csrfToken = csrf_token();
       <button class="nav-item active" id="nav-home"     onclick="showPanel('home')"><i class="bi bi-grid-1x2"></i> Overview</button>
       <button class="nav-item"        id="nav-compose"  onclick="newPoem()"><i class="bi bi-pen"></i> New Poem</button>
       <button class="nav-item"        id="nav-allpoems" onclick="showPanel('allpoems')"><i class="bi bi-collection"></i> All Poems</button>
+      <button class="nav-item" id="nav-drafts" onclick="showPanel('drafts')"><i class="bi bi-file-earmark-text"></i> Drafts</button>
       <button class="nav-item"        id="nav-archived" onclick="showPanel('archived')"><i class="bi bi-archive"></i> Archived</button>
       <button class="nav-item"        id="nav-categories" onclick="showPanel('categories')"><i class="bi bi-tags"></i> Categories</button>
       <p class="nav-section-label">Insights</p>
@@ -352,6 +363,7 @@ $csrfToken = csrf_token();
         <div class="section-head"><h3 id="composeHeading">New poem</h3></div>
         <form id="composeForm">
           <input type="hidden" id="editPoemId" name="id" value="">
+          <input type="hidden" id="editDraftId" name="draft_id" value="">
           <div class="form-field"><label for="poemTitle">Title</label><input type="text" id="poemTitle" name="title" placeholder="Give it a name" spellcheck="true" lang="en-US" required /></div>
           <div class="form-field">
             <label for="poemCategory">Category</label>
@@ -359,14 +371,17 @@ $csrfToken = csrf_token();
             <datalist id="categoryOptions"></datalist>
             <button type="button" class="category-link" onclick="showPanel('categories')">Manage categories</button>
           </div>
-          <div class="form-field"><label for="poemBody">Poem</label><textarea id="poemBody" name="body" placeholder="Write here…" spellcheck="true" writingsuggestions="true" lang="en-US" aria-describedby="writingHelp" required></textarea></div>
+          <div class="form-field"><label for="poemBody">Poem</label><div class="poem-editor"><div id="spellingHighlights" aria-hidden="true"></div><textarea id="poemBody" name="body" placeholder="Write here…" spellcheck="true" writingsuggestions="true" lang="en-US" aria-describedby="writingHelp" required></textarea></div></div>
           <div class="writing-tools">
             <div class="writing-toolbar">
               <label class="spellcheck-toggle"><input type="checkbox" id="spellcheckToggle" checked> Browser spellcheck</label>
+              <label class="spellcheck-toggle"><input type="checkbox" id="autoSpellcheckToggle" checked> Automatic spelling suggestions</label>
               <label for="grammarLanguage">Language <select id="grammarLanguage"><option value="en-US">English (US)</option><option value="en-GB">English (UK)</option></select></label>
               <button type="button" class="btn-ghost" id="checkGrammarButton">Check with LanguageTool</button>
             </div>
-            <p id="writingHelp" class="category-help">Browser spelling and grammar suggestions depend on your browser settings. Clicking “Check with LanguageTool” sends the poem text to <a href="https://languagetool.org" target="_blank" rel="noopener noreferrer">LanguageTool</a> for review (<a href="https://languagetool.org/legal/privacy" target="_blank" rel="noopener noreferrer">privacy policy</a>). Suggestions are optional; your words and line breaks stay yours.</p>
+            <p id="writingHelp" class="category-help">Possible spelling mistakes get red squiggly underlines after you pause typing. Choose a correction below. Spelling is checked privately in your browser. Clicking “Check with LanguageTool” sends the poem text to <a href="https://languagetool.org" target="_blank" rel="noopener noreferrer">LanguageTool</a> for review (<a href="https://languagetool.org/legal/privacy" target="_blank" rel="noopener noreferrer">privacy policy</a>). Suggestions are optional; your words and line breaks stay yours.</p>
+            <p id="spellingStatus" role="status" aria-live="polite"></p>
+            <div id="spellingResults"></div>
             <p id="grammarStatus" role="status" aria-live="polite"></p>
             <div id="grammarResults"></div>
           </div>
@@ -394,11 +409,13 @@ $csrfToken = csrf_token();
           </div>
 
           <div style="display:flex;gap:.8rem;flex-wrap:wrap;">
-            <button type="submit" class="btn-primary"><i class="bi bi-check2"></i> Save poem</button>
+            <button type="button" class="btn-ghost" id="saveDraftButton"><i class="bi bi-file-earmark-text"></i> Save draft</button>
+            <button type="submit" class="btn-primary" id="publishPoemButton"><i class="bi bi-check2"></i> Publish poem</button>
             <button type="button" class="btn-ghost" id="previewPoemButton"><i class="bi bi-eye"></i> Preview on site</button>
             <button type="button" class="btn-ghost" onclick="clearCompose()">Clear</button>
             <button type="button" class="btn-ghost" onclick="cancelCompose()"><i class="bi bi-x-lg"></i> Cancel</button>
           </div>
+          <p id="draftSaveStatus" role="status" aria-live="polite" class="category-help">Save draft keeps your writing private. Publish poem makes it live.</p>
         </form>
       </div>
     </div>
@@ -412,6 +429,14 @@ $csrfToken = csrf_token();
           oninput="renderAllPoems(this.value)" />
       </div>
       <div class="poem-list" id="allPoemsList"></div>
+    </div>
+
+    <div class="panel" id="panel-drafts">
+      <div class="section-head"><h3>Drafts</h3><button type="button" class="btn-ghost" onclick="newPoem()">New poem</button></div>
+      <p class="category-help">Unfinished poems saved privately. Open a draft to keep writing, preview it, or publish when you are ready.</p>
+      <label for="draftSearch">Search drafts</label>
+      <input type="search" id="draftSearch" class="form-control" placeholder="Search by title or category">
+      <div class="poem-list" id="draftList"></div>
     </div>
 
     <!-- Archived (retired) -->
@@ -580,6 +605,8 @@ $csrfToken = csrf_token();
         button.classList.toggle('active', button.dataset.panel === id);
       });
       const titles = { home: "Overview", compose: document.getElementById("editPoemId").value ? "Edit Poem" : "New Poem", allpoems: "All Poems", archived: "Archived", stats: "Analytics", comments: "Comments", settings: "Settings" };
+      titles.drafts = 'Drafts';
+      if (document.getElementById('editDraftId').value) titles.compose = 'Edit Draft';
       document.getElementById("topbarTitle").textContent = titles[id] || id;
       if (id === 'categories') document.getElementById('topbarTitle').textContent = 'Categories';
       if (id === 'notifications') document.getElementById('topbarTitle').textContent = 'Notifications';
@@ -693,6 +720,8 @@ $csrfToken = csrf_token();
       fetch("get_poem_by_id.php?id=" + id).then(r => r.json()).then(p => {
         if (!p || !p.title) { showToast("Could not load poem."); return; }
         document.getElementById("editPoemId").value = id;
+        document.getElementById('editDraftId').value = '';
+        document.getElementById('draftSaveStatus').textContent = 'Save draft keeps revisions private. Publish poem updates the live poem.';
         document.getElementById("poemTitle").value = p.title;
         document.getElementById("poemCategory").value = p.category;
         document.getElementById("poemBody").value = p.body;
@@ -710,9 +739,11 @@ $csrfToken = csrf_token();
     }
     function clearCompose() {
       document.getElementById("editPoemId").value = "";
+      document.getElementById('editDraftId').value = '';
       document.getElementById("composeForm").reset();
       document.getElementById("composeHeading").textContent = "New poem";
       document.getElementById("topbarTitle").textContent = "New Poem";
+      document.getElementById('draftSaveStatus').textContent = 'Save draft keeps your writing private. Publish poem makes it live.';
       updateSeoPreview();
     }
     // Cancel editing/composing and return to the Overview without saving.
@@ -734,21 +765,23 @@ $csrfToken = csrf_token();
       const formData = new FormData(this);
       const isEditing = formData.get("id") !== "";
       const saveButton = this.querySelector('button[type="submit"]');
-      if (saveButton.disabled) return;
+      const draftButton = document.getElementById('saveDraftButton');
+      if (saveButton.disabled || draftButton.disabled) return;
       saveButton.disabled = true;
+      draftButton.disabled = true;
       fetch("save_work.php", {
         method: "POST",
         headers: { "X-CSRF-Token": CSRF_TOKEN },
         body: formData
       }).then(r => r.json()).then(data => {
         if (data.success) {
-          showToast(data.updated ? "Poem updated!" : "Poem saved!");
-          if (!isEditing) clearCompose();
+          showToast(data.updated ? "Poem updated!" : "Poem published!");
+          if (!isEditing || formData.get('draft_id')) clearCompose();
           loadStats();
         }
         else { showToast(data.error || "Save failed."); }
       }).catch(() => showToast("Could not confirm the save. Please check your connection and try again."))
-        .finally(() => { saveButton.disabled = false; });
+        .finally(() => { saveButton.disabled = false; draftButton.disabled = false; });
     });
 
     // ── SEO live preview + character counter ──
@@ -1004,7 +1037,7 @@ $csrfToken = csrf_token();
     // ── Init ──
     document.addEventListener("DOMContentLoaded", () => {
       const saved = localStorage.getItem("tr_dashboard_panel");
-      showPanel(saved && ["home","compose","allpoems","archived","categories","stats","comments","notifications","settings"].includes(saved) ? saved : "home");
+      showPanel(saved && ["home","compose","allpoems","drafts","archived","categories","stats","comments","notifications","settings"].includes(saved) ? saved : "home");
       refreshPendingBadge(); // show pending count on the Comments nav item
     });
     document.querySelectorAll(".nav-item").forEach(btn => {
@@ -1016,6 +1049,9 @@ $csrfToken = csrf_token();
   </script>
   <script src="admin-categories.js?v=20261026-2"></script>
   <script src="admin-writing.js"></script>
+  <div id="spellingMenu" role="menu" aria-label="Spelling corrections" hidden></div>
+  <script src="admin-spelling.js?v=20261106-4"></script>
+  <script src="admin-drafts.js?v=20261106-1"></script>
   <script src="admin-notifications.js?v=20261027-3"></script>
 </body>
 </html>

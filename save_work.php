@@ -10,6 +10,7 @@ if (empty($_SESSION['logged_in'])) {
 }
 csrf_require();
 
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 include 'config.php';
 
 /** Convert a title to a URL-safe slug. */
@@ -65,34 +66,54 @@ try {
 $metaDescParam = $metaDesc !== '' ? $metaDesc : null;
 $metaKwParam   = $metaKeywords !== '' ? $metaKeywords : null;
 
-if ($id > 0) {
-    // ── UPDATE existing poem (fixes the old duplicate-on-edit bug) ──
-    $slug = uniqueSlug($conn, makeSlug($title), $id);
-    $stmt = $conn->prepare(
-        "UPDATE poems SET title = ?, body = ?, category = ?, slug = ?, meta_description = ?, meta_keywords = ? WHERE id = ?"
-    );
-    $stmt->bind_param("ssssssi", $title, $body, $category, $slug, $metaDescParam, $metaKwParam, $id);
-    if ($stmt->execute()) {
-        echo json_encode(['success' => true, 'id' => $id, 'slug' => $slug, 'updated' => true]);
-    } else {
-        echo json_encode(['success' => false, 'error' => 'Database update failed']);
+$draftId = intval($_POST['draft_id'] ?? 0);
+$transaction = false;
+try {
+    if ($draftId > 0) {
+        require 'poem_drafts.php';
+        poem_drafts_init($conn);
     }
-    $stmt->close();
-} else {
-    // ── INSERT new poem ──
-    $slug = uniqueSlug($conn, makeSlug($title));
-    $stmt = $conn->prepare(
-        "INSERT INTO poems (title, body, category, likes, slug, meta_description, meta_keywords) VALUES (?, ?, ?, 0, ?, ?, ?)"
-    );
-    $stmt->bind_param("ssssss", $title, $body, $category, $slug, $metaDescParam, $metaKwParam);
-    if ($stmt->execute()) {
-        echo json_encode(['success' => true, 'id' => $conn->insert_id, 'slug' => $slug, 'updated' => false]);
-    } else {
-        echo json_encode(['success' => false, 'error' => 'Database insert failed']);
+    $conn->begin_transaction();
+    $transaction = true;
+    if ($draftId > 0) {
+        $stmt = $conn->prepare('SELECT source_poem_id FROM poem_drafts WHERE id = ? FOR UPDATE');
+        $stmt->bind_param('i', $draftId);
+        $stmt->execute();
+        $draft = $stmt->get_result()->fetch_assoc();
+        if (!$draft) throw new OutOfBoundsException('Draft no longer exists. Check your poems before publishing again.');
+        $id = intval($draft['source_poem_id'] ?? 0);
     }
+    $updated = $id > 0;
+    if ($updated) {
+        $stmt = $conn->prepare('SELECT id FROM poems WHERE id = ? FOR UPDATE');
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        if (!$stmt->get_result()->fetch_assoc()) throw new OutOfBoundsException('The original poem no longer exists. Your draft has been kept.');
+        $slug = uniqueSlug($conn, makeSlug($title), $id);
+        $stmt = $conn->prepare('UPDATE poems SET title = ?, body = ?, category = ?, slug = ?, meta_description = ?, meta_keywords = ? WHERE id = ?');
+        $stmt->bind_param('ssssssi', $title, $body, $category, $slug, $metaDescParam, $metaKwParam, $id);
+    } else {
+        $slug = uniqueSlug($conn, makeSlug($title));
+        $stmt = $conn->prepare('INSERT INTO poems (title, body, category, likes, slug, meta_description, meta_keywords) VALUES (?, ?, ?, 0, ?, ?, ?)');
+        $stmt->bind_param('ssssss', $title, $body, $category, $slug, $metaDescParam, $metaKwParam);
+    }
+    $stmt->execute();
+    if (!$updated) $id = $conn->insert_id;
     $stmt->close();
+    if ($draftId > 0) {
+        $stmt = $conn->prepare('DELETE FROM poem_drafts WHERE id = ?');
+        $stmt->bind_param('i', $draftId);
+        $stmt->execute();
+        $stmt->close();
+    }
+    $conn->commit();
+    $transaction = false;
+    echo json_encode(['success' => true, 'id' => $id, 'slug' => $slug, 'updated' => $updated]);
+} catch (Throwable $error) {
+    if ($transaction) $conn->rollback();
+    http_response_code($error instanceof OutOfBoundsException ? 404 : 500);
+    error_log('Poem publish failed: ' . $error->getMessage());
+    echo json_encode(['success' => false, 'error' => $error instanceof OutOfBoundsException
+        ? $error->getMessage() : 'Could not publish the poem. Your draft has been kept. Please try again.']);
 }
-
 $conn->close();
-exit;
-?>

@@ -12,13 +12,30 @@ const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'think-room-browser-'));
 const categories = ['God', 'Love', 'Heartbreak'].map((name, i) => ({ id: String(i + 1), name, poem_count: i + 1 }));
 const poems = categories.map((category, i) => ({ id: i + 1, title: ['A quiet prayer', 'Where the light falls', 'What remains'][i], category: category.name, body: 'A line of poetry,\nand a moment to breathe.', slug: 'sample-' + i, archived: 0, views: 40, likes: 8, comments: 2, comment_count: 2, shares: 3, engagement: 86 }));
 let notificationsRead = false;
+let privateDrafts = [];
 const footerMarkup = name => fs.readFileSync(path.join(root, name), 'utf8').match(/<footer\b[^>]*>[\s\S]*?<\/footer>/)[0].replace(/\s+/g, ' ').trim();
 for (const name of ['author.php', 'contact.php', 'poem.php', 'index.shtml', 'maintenance.php']) {
   assert.equal(footerMarkup(name), footerMarkup('home.shtml'), name + ' must share the gallery footer');
   assert.ok(!footerMarkup(name).includes('Back to'), 'Footer must not include a back link');
 }
-const server = http.createServer((request, response) => {
+const server = http.createServer(async (request, response) => {
   const pathname = new URL(request.url, 'http://localhost').pathname;
+  if (pathname === '/admin_drafts.php' || pathname === '/save_work.php') {
+    response.setHeader('Content-Type', 'application/json');
+    if (request.method === 'GET') {
+      const id = new URL(request.url, 'http://localhost').searchParams.get('id');
+      response.end(JSON.stringify(id ? { success: true, draft: privateDrafts.find(draft => String(draft.id) === id) } : { success: true, drafts: privateDrafts }));
+    } else {
+      const chunks = []; for await (const chunk of request) chunks.push(chunk);
+      const form = await new Response(Buffer.concat(chunks), { headers: { 'Content-Type': request.headers['content-type'] } }).formData();
+      const values = Object.fromEntries(form);
+      const id = values.draft_id || '1';
+      if (pathname === '/save_work.php' || values.action === 'delete') privateDrafts = privateDrafts.filter(draft => String(draft.id) !== id);
+      else privateDrafts = [{ ...values, id, source_poem_id: values.id || null }];
+      response.end(JSON.stringify({ success: true, id, updated: false }));
+    }
+    return;
+  }
   if (pathname === '/admin_notifications.php') {
     if (request.method === 'POST') notificationsRead = true;
     response.setHeader('Content-Type', 'application/json');
@@ -62,6 +79,7 @@ const server = http.createServer((request, response) => {
   let content = fs.readFileSync(file);
   if (pathname === '/dashboard.php') {
     notificationsRead = false;
+    privateDrafts = [];
     let markup = content.toString().replace(/<\?php if \(isset\(\$_GET\['success'\]\)\): \?>[\s\S]*?<\?php endif; \?>/g, '').replace(/<\?(?:php|=)[\s\S]*?\?>/g, '');
     const checks = `<script>document.addEventListener('DOMContentLoaded', async () => {
       try {
@@ -96,6 +114,55 @@ const server = http.createServer((request, response) => {
         if([...document.querySelectorAll('[data-notification-count]')].some(badge=>!badge.hidden)) throw Error('Read menu badges');
         document.querySelector('#notificationPageList .category-link').click();
         if(!document.getElementById('panel-comments').classList.contains('active')) throw Error('Notification moderation action');
+        showPanel('compose');
+        const poemField = document.getElementById('poemBody');
+        poemField.value = 'Hello wrld.';
+        poemField.dispatchEvent(new Event('input', { bubbles: true }));
+        await waitFor(()=>document.querySelector('#spellingResults .grammar-suggestion'));
+        if(!document.getElementById('spellingResults').textContent.includes('world')) throw Error('Automatic spelling correction missing');
+        const underline = document.querySelector('#spellingHighlights .spelling-error');
+        if(!underline || underline.textContent !== 'wrld') throw Error('Inline spelling underline missing');
+        if(getComputedStyle(underline).textDecorationStyle !== 'wavy') throw Error('Spelling underline must be squiggly');
+        if(getComputedStyle(document.getElementById('spellingHighlights')).pointerEvents !== 'none') throw Error('Underlines must allow typing through them');
+        const wordRect = underline.getClientRects()[0];
+        const rightClick = new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: wordRect.left + 3, clientY: wordRect.top + 3 });
+        poemField.dispatchEvent(rightClick);
+        if(!rightClick.defaultPrevented || document.getElementById('spellingMenu').hidden) throw Error('Right-click correction menu missing');
+        const correction = [...document.querySelectorAll('#spellingMenu button')].find(button=>button.textContent === 'world');
+        if(!correction) throw Error('Right-click world correction missing');
+        correction.click();
+        if(poemField.value !== 'Hello world.') throw Error('Spelling replacement');
+        if(!document.getElementById('spellingMenu').hidden) throw Error('Correction menu should close after applying');
+        poemField.value = 'wrld' + String.fromCharCode(10) + 'wrld';
+        poemField.dispatchEvent(new Event('input', {bubbles:true}));
+        await waitFor(()=>document.querySelectorAll('#spellingHighlights .spelling-error').length === 2);
+        poemField.setSelectionRange(6, 6);
+        poemField.dispatchEvent(new KeyboardEvent('keydown', {key:'F10',shiftKey:true,bubbles:true,cancelable:true}));
+        if(document.getElementById('spellingMenu').hidden) throw Error('Keyboard spelling menu missing');
+        [...document.querySelectorAll('#spellingMenu button')].find(button=>button.textContent === 'world').click();
+        if(poemField.value !== 'wrld' + String.fromCharCode(10) + 'world') throw Error('Right-click must correct only the selected occurrence');
+        await waitFor(()=>document.querySelector('#spellingHighlights .spelling-error'));
+        poemField.setSelectionRange(1,1);
+        poemField.dispatchEvent(new KeyboardEvent('keydown', {key:'F10',shiftKey:true,bubbles:true,cancelable:true}));
+        document.getElementById('spellingMenu').dispatchEvent(new KeyboardEvent('keydown', {key:'Escape',bubbles:true,cancelable:true}));
+        if(!document.getElementById('spellingMenu').hidden || document.activeElement !== poemField) throw Error('Escape must dismiss spelling menu');
+        document.getElementById('composeForm').reset();
+        poemField.value = 'An unfinished poem';
+        document.getElementById('saveDraftButton').click();
+        await waitFor(()=>document.getElementById('editDraftId').value !== '');
+        if(!document.getElementById('draftSaveStatus').textContent.includes('saved privately')) throw Error('Draft save status');
+        clearCompose(); showPanel('drafts');
+        await waitFor(()=>document.querySelector('#draftList button'));
+        if(!document.getElementById('draftList').textContent.includes('Untitled draft')) throw Error('Untitled draft listing');
+        document.querySelector('#draftList button').click();
+        await waitFor(()=>poemField.value === 'An unfinished poem');
+        if(!document.getElementById('panel-compose').classList.contains('active')) throw Error('Draft editor navigation');
+        document.getElementById('poemTitle').value = 'Ready to publish';
+        document.getElementById('poemCategory').value = 'Love';
+        document.getElementById('composeForm').requestSubmit();
+        await waitFor(()=>poemField.value === '' && !document.getElementById('publishPoemButton').disabled);
+        showPanel('drafts');
+        await waitFor(()=>document.getElementById('draftList').textContent.includes('No drafts yet'));
         showPanel('categories'); await loadCategories();
         if(document.documentElement.scrollWidth > innerWidth) throw Error('Page overflow');
         document.documentElement.dataset.browserCheck = 'PASS';
@@ -252,6 +319,19 @@ const server = http.createServer((request, response) => {
         const screenshot = await command('Page.captureScreenshot', { format: 'png' }, sessionId);
         fs.writeFileSync(path.join(temp, label + '.png'), Buffer.from(screenshot.data, 'base64'));
         console.log(`PASS: ${label} (${path.join(temp, label + '.png')})`);
+        if (label.startsWith('admin-')) {
+          await command('Runtime.evaluate', { expression: `showPanel('compose'); document.getElementById('poemBody').value = 'Hello wrld.\\nThe moon lights the wrld.'; document.getElementById('poemBody').spellcheck = false; document.getElementById('poemBody').dispatchEvent(new Event('input', {bubbles:true}));`, returnByValue: true }, sessionId);
+          for (let attempt = 0; attempt < 60; attempt++) {
+            const marks = await command('Runtime.evaluate', { expression: `document.querySelectorAll('#spellingHighlights .spelling-error').length`, returnByValue: true }, sessionId);
+            if (marks.result.value === 2) break;
+            await delay(100);
+          }
+          const visible = await command('Runtime.evaluate', { expression: `document.querySelectorAll('#spellingHighlights .spelling-error').length`, returnByValue: true }, sessionId);
+          assert.equal(visible.result.value, 2, 'Both misspellings receive inline underlines');
+          const editorImage = await command('Page.captureScreenshot', { format: 'png' }, sessionId);
+          fs.writeFileSync(path.join(temp, label + '-spelling.png'), Buffer.from(editorImage.data, 'base64'));
+          console.log(`PASS: ${label} inline squiggles (${path.join(temp, label + '-spelling.png')})`);
+        }
       } finally {
         for (const request of pending.values()) clearTimeout(request.timer);
         child.kill();

@@ -32,7 +32,7 @@ async function freePort() {
     const database = spawn(path.join(mysqlBin, 'mysqld.exe'), [`--defaults-file=${path.join(dbDir, 'my.ini')}`, '--console', '--bind-address=127.0.0.1'], { windowsHide: true, stdio: 'ignore' });
     children.push(database);
     fs.mkdirSync(siteDir);
-    for (const file of ['categories.php', 'manage_categories.php', 'save_work.php', 'get_poems.php', 'csrf.php', 'admin_session.php', 'maintenance_check.php', 'poem.php', 'preview_poem.php', 'home.shtml', 'theme.css', 'theme.js']) fs.copyFileSync(path.join(root, file), path.join(siteDir, file));
+    for (const file of ['categories.php', 'manage_categories.php', 'save_work.php', 'admin_drafts.php', 'poem_drafts.php', 'get_poems.php', 'all_poems.php', 'get_poem_public.php', 'csrf.php', 'admin_session.php', 'maintenance_check.php', 'poem.php', 'preview_poem.php', 'home.shtml', 'theme.css', 'theme.js']) fs.copyFileSync(path.join(root, file), path.join(siteDir, file));
     fs.writeFileSync(path.join(siteDir, 'admin_config.php'), '<?php // Isolated test credentials.');
     fs.writeFileSync(path.join(siteDir, 'config.php'), `<?php
       mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
@@ -180,6 +180,47 @@ async function freePort() {
     assert.ok(html.includes('class="masonry"'));
     const afterPreview = await (await fetch(base + 'fixture.php', { headers: { Cookie: cookie } })).json();
     assert.equal(afterPreview.poems.length, 4, 'Preview never publishes a poem');
+    const draftRequest = async (values, authenticated = true, csrf = true) => fetch(base + 'admin_drafts.php', {
+      method: 'POST', headers: { ...(authenticated ? { Cookie: cookie } : {}), ...(csrf ? { 'X-CSRF-Token': token } : {}) },
+      body: new URLSearchParams(values)
+    });
+    const privateBody = '\nSecret draft words\nStill unfinished\n';
+    assert.equal((await fetch(base + 'admin_drafts.php')).status, 403);
+    assert.equal((await draftRequest({ body: privateBody }, false)).status, 403);
+    assert.equal((await draftRequest({ body: privateBody }, true, false)).status, 403);
+    const privateSave = await draftRequest({ body: privateBody });
+    assert.equal(privateSave.status, 200);
+    const privateId = (await privateSave.json()).id;
+    assert.ok(privateId, 'Untitled drafts need no category');
+    const readDraft = async id => (await fetch(base + 'admin_drafts.php?id=' + id, { headers: { Cookie: cookie } })).json();
+    assert.equal((await readDraft(privateId)).draft.body, privateBody, 'Drafts preserve exact line breaks');
+    const draftList = await fetch(base + 'admin_drafts.php', { headers: { Cookie: cookie } });
+    assert.ok(draftList.headers.get('cache-control').includes('no-store'));
+    assert.equal((await draftList.json()).drafts.length, 1);
+    assert.ok(!(await (await fetch(base + 'get_poems.php')).text()).includes('Secret draft words'));
+    assert.ok(!(await (await fetch(base + 'all_poems.php')).text()).includes('Secret draft words'));
+    assert.equal((await draftRequest({ draft_id: privateId, title: 'Private draft', body: privateBody })).status, 200);
+    const publishForm = new URLSearchParams({ draft_id: privateId, title: 'Published draft', category: 'Love', body: privateBody });
+    const publish = () => fetch(base + 'save_work.php', { method: 'POST', headers: { Cookie: cookie, 'X-CSRF-Token': token }, body: publishForm });
+    assert.equal((await (await publish()).json()).success, true);
+    assert.equal((await readDraft(privateId)).success, false, 'Successful publication removes the private draft');
+    assert.equal((await publish()).status, 404, 'Repeated publication cannot duplicate a poem');
+    const revision = await (await draftRequest({ id: 1, title: 'Revised first', body: 'Unpublished revision', category: 'Love' })).json();
+    let publicFirst = (await (await fetch(base + 'get_poems.php')).json()).find(poem => Number(poem.id) === 1);
+    assert.equal(publicFirst.body, 'First poem', 'Draft revisions leave the live poem unchanged');
+    const failedForm = new URLSearchParams({ draft_id: revision.id, title: 'Revised first', body: 'Unpublished revision' });
+    assert.equal((await (await fetch(base + 'save_work.php', { method: 'POST', headers: { Cookie: cookie, 'X-CSRF-Token': token }, body: failedForm })).json()).success, false);
+    assert.equal((await readDraft(revision.id)).success, true, 'Failed publication preserves the draft');
+    failedForm.set('category', 'Love');
+    failedForm.set('id', '9999');
+    const updatedRevision = await (await fetch(base + 'save_work.php', { method: 'POST', headers: { Cookie: cookie, 'X-CSRF-Token': token }, body: failedForm })).json();
+    assert.equal(updatedRevision.success, true);
+    assert.equal(Number(updatedRevision.id), 1, 'Draft source controls the updated poem');
+    assert.equal(updatedRevision.updated, true);
+    const discard = await (await draftRequest({ title: 'Discard me' })).json();
+    assert.equal((await (await draftRequest({ action: 'delete', draft_id: discard.id })).json()).success, true);
+    assert.equal((await readDraft(discard.id)).success, false);
+    console.log('PASS: private drafts, partial saves, exact text, auth/CSRF, public exclusion, revisions, publication, failed-publication retention, duplicate prevention and deletion.');
     console.log('PASS: import, counts, create, duplicates, validation, rename, rollback, reassignment, empty removal, canonical poem save, authentication and CSRF.');
     console.log('PASS: private gallery preview, no persistence, safe text encoding, line breaks, authentication, CSRF and no-cache/no-index headers.');
   } finally {

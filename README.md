@@ -85,15 +85,36 @@ proxy failure) require the host's own error-page configuration.
 In **New Poem**, **Preview on site** opens the real gallery layout in a private tab
 without saving a poem. The preview requires an admin session and a CSRF token,
 uses POST rather than placing draft text in URLs, and sends no-cache/no-index
-headers. **Save poem** still publishes immediately; preview is optional.
+headers. **Publish poem** makes a poem live; preview is optional.
 
-The editor enables browser spellcheck. **Check with LanguageTool** sends the poem
+**Save draft** saves unfinished writing privately, even without a title or
+category. The **Drafts** section lets you search, continue, or delete drafts.
+Publishing a draft moves it into the public poems; a failed publish keeps it.
+Draft revisions to an existing poem leave its published text unchanged until
+you publish. Drafts live in a separate `poem_drafts` table, created automatically
+on the first authenticated draft request, and are excluded from all public poem
+queries. Deploy `admin_drafts.php`, `poem_drafts.php`, `admin-drafts.js`,
+`save_work.php`, `dashboard.php`, and `.htaccess` together.
+
+The editor enables browser spellcheck and automatic local spelling suggestions
+after an 800 ms typing pause. Misspelled words receive red squiggly underlines
+inside the poem editor, including repeated occurrences. Right-click an underlined
+word to choose a correction in place, or use Shift+F10 with the cursor in that
+word. Suggestions also appear below the poem with optional
+replacements; a worker keeps dictionary checks off the typing thread. US and UK
+English dictionaries are bundled in `vendor/spelling` with their licenses.
+Deploy that directory, `admin-spelling.js`, and `spelling-worker.js` alongside
+the dashboard. Automatic checks never send draft text to a service and can be
+turned off with **Automatic spelling suggestions**.
+**Check with LanguageTool** sends the poem
 body to LanguageTool only when clicked, using its public proofreading API. It
 needs an internet connection and is subject to service availability and free
 request limits. The editor explains the text sharing and links to its privacy
 policy. Suggestions never change a poem unless selected. Line breaks are preserved.
 
 Verification: `node tests/admin-writing.test.cjs` checks writing interactions.
+`node tests/admin-spelling.test.cjs` checks local dictionaries, automatic checking,
+optional corrections, stale results, language switching, and disabling checks.
 `node tests/theme.test.cjs` checks defaults, persistence, and separate preferences.
 `node tests/http-routing.test.cjs` checks error handling with an isolated Apache
 server (Windows/XAMPP default, overridable with `TEST_APACHE_ROOT`).

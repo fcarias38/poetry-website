@@ -55,7 +55,7 @@ AddHandler server-parsed .shtml
 Options +Includes
 
 # ── Block sensitive files ──
-<FilesMatch "^(config|admin_config|admin_config\.example|config\.example|admin_auth|maintenance_check|categories)\.php$">
+<FilesMatch "^(config|admin_config|admin_config\.example|config\.example|admin_auth|maintenance_check|categories|poem_drafts)\.php$">
     Require all denied
 </FilesMatch>
 
@@ -75,6 +75,7 @@ RewriteRule ^(admin_session|notifications)\.php$ - [F,L]
 
 # Keep the notification API URL intact for GET and CSRF-protected POST requests.
 RewriteRule ^admin_notifications\.php$ - [L]
+RewriteRule ^admin_drafts\.php$ - [L]
 
 # ── Clean URLs: hide .php extension ──
 # Redirect direct .php requests to clean URLs (except config files)
