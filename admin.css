@@ -146,7 +146,7 @@ button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
 .writing-toolbar select { color: var(--text); background: var(--surface); border: 1px solid var(--border-2); border-radius: 6px; padding: 0.4rem; }
 .writing-tools .category-help { margin: 0.8rem 0 0; font-size: 0.75rem; }
 .writing-tools a { color: var(--accent); }
-#grammarStatus { font-size: 0.82rem; margin-top: 0.8rem; }
+#grammarStatus, #spellingStatus { font-size: 0.82rem; margin-top: 0.8rem; }
 .grammar-suggestion { border-top: 1px solid var(--border); margin-top: 1rem; padding-top: 1rem; font-size: 0.83rem; }
 .grammar-context { color: var(--text-mute); white-space: pre-wrap; margin: 0.4rem 0 0.7rem; overflow-wrap: anywhere; }
 .category-help { color: var(--text-dim); font-size: 0.85rem; line-height: 1.7; margin-bottom: 1.3rem; }
