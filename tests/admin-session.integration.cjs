@@ -12,7 +12,7 @@ const { setTimeout: delay } = require('node:timers/promises');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'think-room-session-'));
   const config = path.join(temp, 'admin_config.php');
   fs.writeFileSync(config, "<?php $ADMIN_EMAIL='test@example.test'; $ADMIN_PASSWORD='test-only-password';");
-  for (const file of ['admin_session.php', 'admin_auth.php', 'admin_login.php', 'logout.php', 'csrf.php', 'support_details.php']) {
+  for (const file of ['admin_session.php', 'admin_auth.php', 'admin_login.php', 'login.php', 'logout.php', 'csrf.php', 'support_details.php']) {
     fs.copyFileSync(path.join(root, file), path.join(temp, file));
   }
   fs.writeFileSync(path.join(temp, 'fixture.php'), `<?php
@@ -26,7 +26,10 @@ const { setTimeout: delay } = require('node:timers/promises');
   await new Promise(resolve => portProbe.listen(0, '127.0.0.1', resolve));
   const port = portProbe.address().port;
   await new Promise(resolve => portProbe.close(resolve));
-  const server = spawn(process.env.TEST_PHP || 'C:/xampp/php/php.exe', ['-S', `127.0.0.1:${port}`, '-t', temp], { windowsHide: true, stdio: 'ignore' });
+  const server = spawn(process.env.TEST_PHP || 'C:/xampp/php/php.exe', ['-d', `session.save_path=${temp}`, '-S', `127.0.0.1:${port}`, '-t', temp], { windowsHide: true, stdio: ['ignore', 'ignore', 'pipe'] });
+  let serverErrors = '';
+  server.stderr.on('data', chunk => { serverErrors += chunk; });
+  server.on('error', error => { serverErrors += error.message; });
   const base = `http://127.0.0.1:${port}/`;
   const cookie = (response, name) => [...(response.headers.get('set-cookie') || '').matchAll(new RegExp(`${name}=([^;,\\s]*)`, 'g'))].at(-1)?.[1];
   const read = async (cookies = '', query = '') => {
@@ -43,8 +46,10 @@ const { setTimeout: delay } = require('node:timers/promises');
     for (let attempt = 0; attempt < 60; attempt++) {
       try { await read(); ready = true; break; } catch { await delay(100); }
     }
-    assert.ok(ready, 'Isolated PHP server did not start');
+    assert.ok(ready, 'Isolated PHP server did not start:\n' + serverErrors);
     assert.equal((await read()).data.logged_in, false);
+    const visitLogin = cookies => fetch(base + 'login.php', { redirect: 'manual', headers: { Cookie: cookies || '' } });
+    assert.equal((await visitLogin()).status, 200, 'Visitors can reach the sign-in form');
     const remembered = await login(true);
     assert.match(remembered.token, /^[a-f0-9]{64}$/);
     assert.match(remembered.response.headers.get('set-cookie'), /HttpOnly/i);
@@ -55,6 +60,13 @@ const { setTimeout: delay } = require('node:timers/promises');
     const record = JSON.parse(fs.readFileSync(recordPath, 'utf8').split('\n')[1]);
     assert.ok(Math.abs(record.expires - Date.now() / 1000 - 604800) < 10, 'Seven-day server expiry');
     const first = await read(remembered.session);
+    assert.equal((await visitLogin(remembered.session)).headers.get('location'), '/dashboard', 'Active login skips the sign-in form');
+    // Closing the browser discards PHPSESSID but retains the persistent cookie.
+    const reopened = await visitLogin(`tr_remember=${remembered.token}`);
+    assert.equal(reopened.status, 302, 'Returning through login restores the remembered login');
+    assert.equal(reopened.headers.get('location'), '/dashboard');
+    assert.match(reopened.headers.get('cache-control'), /no-store/, 'Login redirects must not be cached');
+    assert.equal((await read(`PHPSESSID=${cookie(reopened, 'PHPSESSID')}`)).data.logged_in, true, 'Redirect creates an authenticated PHP session');
     const restored = await read(`tr_remember=${remembered.token}`);
     assert.equal(restored.data.logged_in, true, 'Restore after PHP session is lost');
     assert.equal(restored.data.csrf, first.data.csrf, 'Open editor CSRF survives session restoration');
@@ -63,8 +75,10 @@ const { setTimeout: delay } = require('node:timers/promises');
     assert.equal((await read(restoredSession)).data.logged_in, true, 'Remembered login renews an idle session');
     await fetch(base + 'logout.php', { redirect: 'manual', headers: { Cookie: restoredSession } });
     assert.equal((await read(`tr_remember=${remembered.token}`)).data.logged_in, false, 'Logout revokes saved token');
+    assert.equal((await visitLogin(`tr_remember=${remembered.token}`)).status, 200, 'Revoked login shows the sign-in form');
     const temporary = await login(false);
     assert.ok(!temporary.token || temporary.token === 'deleted', 'Unchecked option creates no remembered token');
+    assert.equal((await visitLogin()).status, 200, 'Closing an unremembered browser requires sign-in');
     await read(temporary.session, '?age=1');
     assert.equal((await read(temporary.session)).data.logged_in, false, 'Normal login has an idle timeout');
     const expired = await login(true);
@@ -73,6 +87,7 @@ const { setTimeout: delay } = require('node:timers/promises');
     expiredRecord.expires = Math.floor(Date.now() / 1000) - 1;
     fs.writeFileSync(expiryPath, '<?php exit; ?>\n' + JSON.stringify(expiredRecord));
     assert.equal((await read(`tr_remember=${expired.token}`)).data.logged_in, false, 'Expired token rejected');
+    assert.equal((await visitLogin(`tr_remember=${expired.token}`)).status, 200, 'Expired login shows the sign-in form');
     const changed = await login(true);
     fs.appendFileSync(config, '\n// Simulate password reset updating credentials.');
     assert.equal((await read(changed.session + `; tr_remember=${changed.token}`)).data.logged_in, false, 'Password change revokes active and remembered login');

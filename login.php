@@ -1,4 +1,12 @@
-<?php $loginError = isset($_GET['error']); ?>
+<?php
+require_once __DIR__ . '/admin_session.php';
+header('Cache-Control: no-store, private');
+if (!empty($_SESSION['logged_in'])) {
+    header('Location: /dashboard');
+    exit;
+}
+$loginError = isset($_GET['error']);
+?>
 <!DOCTYPE html>
 <html lang="en" data-theme-scope="admin" data-theme="light">
 <head>
