@@ -7,6 +7,14 @@ $supportToken = csrf_token();
 <!DOCTYPE html>
 <html lang="en" data-theme-scope="site" data-theme="dark">
 <head>
+  <!-- Google Tag Manager -->
+  <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-K94H3WBD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+  </script>
+  <!-- End Google Tag Manager -->
   <script src="/theme.js?v=20261027-4"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
